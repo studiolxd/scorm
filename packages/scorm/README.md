@@ -456,9 +456,9 @@ Using Claude Code, Cursor, or another AI coding assistant? Add the **[scorm-skil
 ```
 # Claude Code
 /plugin marketplace add studiolxd/scorm-skills
-/plugin install scorm-integration@studiolxd-scorm
+/plugin install scorm-skills@studiolxd-scorm
 
-# Cursor: copy cursor/scorm-integration.mdc into your project's .cursor/rules/
+# Cursor: copy cursor/scorm.mdc into your project's .cursor/rules/
 ```
 
 ## Additional Documentation
