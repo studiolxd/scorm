@@ -37,11 +37,15 @@ export function ScormProvider({ version, options = {}, children }: ScormProvider
   const contextValue = useMemo<ScormContextValue>(() => {
     const driverResult = createDriver(version, options, loggerRef.current);
 
+    // Resolve the concrete version to report in status. When 'auto' resolves to a
+    // real driver we use the detected version; otherwise fall back to fallbackVersion.
+    const fallbackVersion = options.fallbackVersion ?? '2004';
+
     if (driverResult.ok) {
       const driver = driverResult.value;
       const api = new ScormApi(driver);
       const status: ScormStatus = {
-        version,
+        version: driver.version,
         apiFound: true,
         initialized: false,
         terminated: false,
@@ -52,7 +56,7 @@ export function ScormProvider({ version, options = {}, children }: ScormProvider
 
     // API not found and noLmsBehavior === 'error'
     const status: ScormStatus = {
-      version,
+      version: version === 'auto' ? fallbackVersion : version,
       apiFound: false,
       initialized: false,
       terminated: false,
@@ -60,7 +64,7 @@ export function ScormProvider({ version, options = {}, children }: ScormProvider
     };
     return { status, raw: null, api: null };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [version, options.noLmsBehavior, options.maxParentDepth, options.checkOpener, options.debug]);
+  }, [version, options.noLmsBehavior, options.maxParentDepth, options.checkOpener, options.debug, options.fallbackVersion]);
 
   return (
     <ScormContext.Provider value={contextValue}>

@@ -2,6 +2,7 @@
 export { ScormProvider } from './react/scorm-provider';
 export { useScorm } from './react/use-scorm';
 export { useScormAutoTerminate } from './react/use-scorm-auto-terminate';
+export { useScormAutoCommit } from './react/use-scorm-auto-commit';
 export { useScormSession } from './react/use-scorm-session';
 export type { ScormContextValue } from './react/scorm-context';
 export type { AutoTerminateOptions } from './react/use-scorm-auto-terminate';
@@ -15,6 +16,7 @@ export type {
   ObjectiveRecord,
   ScoreData,
   InteractionType,
+  CommentRecord,
 } from './types/api';
 
 // Path builders
@@ -62,8 +64,8 @@ export type { ScormStatus } from './types/status';
 export type { ScormProviderOptions, ScormProviderProps, NoLmsBehavior } from './types/options';
 
 // Core classes (for advanced use)
-export { findScormApi } from './core/locator';
-export type { LocatorResult, LocatorOptions } from './core/locator';
+export { findScormApi, detectScormApi, detectScormVersion } from './core/locator';
+export type { LocatorResult, LocatorOptions, DetectResult } from './core/locator';
 export { Scorm12Driver } from './core/scorm12-driver';
 export { Scorm2004Driver } from './core/scorm2004-driver';
 export { createDriver } from './core/create-driver';

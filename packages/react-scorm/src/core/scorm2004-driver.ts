@@ -21,9 +21,25 @@ export class Scorm2004Driver implements IScormDriver {
     this.logger = logger;
   }
 
+  /**
+   * Call Initialize.
+   *
+   * Idempotent while the session is live: calling it again after a successful
+   * initialize is a no-op that returns `ok(true)` (it does NOT re-issue
+   * Initialize, which the LMS would reject with error 103).
+   *
+   * Once {@link terminate} has run, this driver is permanently spent — SCORM
+   * forbids re-initializing a terminated session, so this returns error 104. To
+   * start a fresh session, create a new driver (e.g. remount `<ScormProvider>`
+   * with a changed `key`).
+   */
   initialize(): Result<true, ScormError> {
     if (this._terminated) {
       return err(this.buildError('initialize', undefined, undefined, 104, 'Content Instance Terminated'));
+    }
+    if (this._initialized) {
+      this.logger.debug('Initialize skipped — already initialized');
+      return ok(true);
     }
     try {
       this.logger.debug('Initialize("")');

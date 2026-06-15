@@ -112,10 +112,16 @@ export default function App() {
         </div>
       </header>
 
+      {/*
+        key={version} forces a fresh ScormProvider (and a fresh driver/session) when
+        the version toggle changes — a terminated SCORM session cannot be re-initialized
+        on the same driver, so remounting is the clean way to start over.
+        debug is gated to dev so the production build stays quiet in the console.
+      */}
       <ScormProvider
         key={version}
         version={version}
-        options={{ noLmsBehavior: 'mock', debug: true }}
+        options={{ noLmsBehavior: 'mock', debug: import.meta.env.DEV }}
       >
         <ScormDemoShell activeTab={activeTab} onTabChange={setActiveTab} />
       </ScormProvider>

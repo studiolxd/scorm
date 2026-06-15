@@ -2,6 +2,25 @@
 
 All notable changes to `@studiolxd/react-scorm` are documented here.
 
+## [1.1.0] - 2026-06-15
+
+### Added
+- `version="auto"` on `<ScormProvider>`: detect the host LMS's API at runtime (probes SCORM 2004, then 1.2), with a new `fallbackVersion` option for the no-API case
+- `detectScormApi()` and `detectScormVersion()` standalone helpers
+- `useScormAutoCommit(intervalMs)` hook for periodic best-effort commits during long sessions
+- `getInteraction(index)` to read a recorded interaction back (SCORM 2004; returns a write-only error in 1.2 per spec)
+- `getLearnerComments()` / `getLmsComments()` to read comment text (not just counts), plus the `CommentRecord` type
+
+### Fixed
+- **SSR safety:** `findScormApi` no longer touches `window` during server-side rendering, so `<ScormProvider>` no longer throws in Next.js / Remix
+- `initialize()` is now idempotent while a session is live — a redundant call is a no-op returning `ok(true)` instead of triggering LMS error 103
+- SCORM 1.2 `setScore` now validates `raw`/`min`/`max` are within 0–100 (matching the 2004 `scaled` validation)
+- `formatScorm12Time` clamps durations beyond the SCORM 1.2 `CMITimespan` maximum to `9999:99:99.99`
+
+### Documentation
+- `InteractionRecord.learnerResponse` / `correctResponses` now document the expected encoding for each interaction type
+- Clarified the post-`terminate()` driver latch (remount the provider with a changed `key` to start a new session)
+
 ## [1.0.2] - 2026-03-24
 
 ### Changed
