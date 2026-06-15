@@ -52,7 +52,13 @@ export function createScormStore(
   if (enableAutoTerminate) disposers.push(autoTerminate(session));
   if (autoCommitMs > 0) disposers.push(autoCommit(session, autoCommitMs));
 
-  const status = readable<ScormStatus>(session.status, (set) => session.on('change', set));
+  const status = readable<ScormStatus>(session.status, (set) => {
+    // Push the *current* status to a (possibly late) subscriber, then track changes —
+    // otherwise a subscriber that attaches after an early change would see the stale
+    // creation-time snapshot until the next change.
+    set(session.status);
+    return session.on('change', set);
+  });
 
   return {
     session,

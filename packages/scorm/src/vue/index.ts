@@ -1,7 +1,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // @studiolxd/scorm/vue — Vue 3 composable
 // ─────────────────────────────────────────────────────────────────────────────
-import { shallowRef, onScopeDispose, type ShallowRef } from 'vue';
+import { shallowRef, onScopeDispose, getCurrentScope, type ShallowRef } from 'vue';
 import { createScormSession, type ScormSession } from '../session/create-scorm-session';
 import { autoTerminate } from '../lifecycle/auto-terminate';
 import { autoCommit } from '../lifecycle/auto-commit';
@@ -27,6 +27,12 @@ export interface UseScormReturn {
   initialize: () => Result<true, ScormError> | undefined;
   commit: () => Result<true, ScormError> | undefined;
   terminate: () => Result<true, ScormError> | undefined;
+  /**
+   * Tear down listeners and destroy the session. Called automatically on scope
+   * dispose when used inside a component `setup()`. Call it manually when using
+   * this composable outside an effect scope.
+   */
+  destroy: () => void;
 }
 
 /**
@@ -56,11 +62,18 @@ export function useScorm(
   if (enableAutoTerminate) disposers.push(autoTerminate(session));
   if (autoCommitMs > 0) disposers.push(autoCommit(session, autoCommitMs));
 
-  onScopeDispose(() => {
+  let destroyed = false;
+  const destroy = () => {
+    if (destroyed) return;
+    destroyed = true;
     off();
     for (const dispose of disposers) dispose();
     session.destroy();
-  });
+  };
+
+  // Auto-clean only when there is an active effect scope (i.e. inside setup()).
+  // Outside a scope, onScopeDispose is a no-op, so the caller uses `destroy()`.
+  if (getCurrentScope()) onScopeDispose(destroy);
 
   return {
     session,
@@ -68,5 +81,6 @@ export function useScorm(
     initialize: () => session.initialize(),
     commit: () => session.commit(),
     terminate: () => session.terminate(),
+    destroy,
   };
 }

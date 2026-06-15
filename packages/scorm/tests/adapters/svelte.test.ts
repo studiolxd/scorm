@@ -20,4 +20,17 @@ describe('svelte adapter — createScormStore', () => {
     unsub();
     store.destroy();
   });
+
+  it('a late subscriber sees the current status, not the creation-time snapshot', () => {
+    const store = createScormStore('2004', { noLmsBehavior: 'mock' });
+    // Change state BEFORE anyone subscribes.
+    store.session.initialize();
+
+    let first: ScormStatus | undefined;
+    const unsub = store.status.subscribe((v) => { first ??= v; });
+    expect(first?.initialized).toBe(true); // current state, not stale
+
+    unsub();
+    store.destroy();
+  });
 });

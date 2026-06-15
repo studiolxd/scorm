@@ -18,4 +18,18 @@ describe('vue adapter — useScorm', () => {
 
     scope.stop(); // triggers onScopeDispose → session.destroy()
   });
+
+  it('works outside an effect scope and exposes destroy() for manual cleanup', () => {
+    // No effectScope: onScopeDispose is a no-op, so the caller must use destroy().
+    const result = useScorm('2004', { noLmsBehavior: 'mock' });
+    expect(typeof result.destroy).toBe('function');
+
+    result.initialize();
+    expect(result.status.value.initialized).toBe(true);
+
+    // destroy() detaches the change listener: further changes don't update status.
+    result.destroy();
+    result.session.terminate();
+    expect(result.status.value.terminated).toBe(false); // not observed after destroy
+  });
 });

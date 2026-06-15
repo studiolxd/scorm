@@ -38,6 +38,34 @@ describe('<scorm-session> web component', () => {
     document.body.removeChild(el);
   });
 
+  it('emits exactly one initial change event without auto-terminate', () => {
+    const el = document.createElement('scorm-session') as any;
+    el.setAttribute('version', '2004');
+    el.setAttribute('no-lms-behavior', 'mock');
+    const events: boolean[] = [];
+    el.addEventListener('change', (e: Event) => events.push((e as CustomEvent).detail.status.initialized));
+
+    document.body.appendChild(el);
+    expect(events).toEqual([false]); // single initial event, uninitialized
+
+    document.body.removeChild(el);
+  });
+
+  it('auto-terminate emits a distinct initial then initialized event (no duplicate)', () => {
+    const el = document.createElement('scorm-session') as any;
+    el.setAttribute('version', '2004');
+    el.setAttribute('no-lms-behavior', 'mock');
+    el.setAttribute('auto-terminate', '');
+    const events: boolean[] = [];
+    el.addEventListener('change', (e: Event) => events.push((e as CustomEvent).detail.status.initialized));
+
+    document.body.appendChild(el);
+    // initial (uninitialized) then the auto-terminate initialize (initialized)
+    expect(events).toEqual([false, true]);
+
+    document.body.removeChild(el);
+  });
+
   it('auto-terminate: initializes on connect, terminates on disconnect', () => {
     const el = document.createElement('scorm-session') as any;
     el.setAttribute('version', '2004');

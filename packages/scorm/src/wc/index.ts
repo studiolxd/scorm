@@ -63,6 +63,11 @@ export function defineScormSession(tag = 'scorm-session'): void {
         this.dispatchEvent(new CustomEvent('change', { detail: { status } }));
       });
 
+      // Announce the initial state first, before any auto-wiring. This way
+      // `auto-terminate` (which initializes) produces a distinct follow-up `change`
+      // event rather than a duplicate of the initial one.
+      this.dispatchEvent(new CustomEvent('change', { detail: { status: session.status } }));
+
       if (this.hasAttribute('auto-terminate')) {
         this.disposers.push(autoTerminate(session));
       }
@@ -70,9 +75,6 @@ export function defineScormSession(tag = 'scorm-session'): void {
       if (commitMs > 0) {
         this.disposers.push(autoCommit(session, commitMs));
       }
-
-      // Announce the initial state.
-      this.dispatchEvent(new CustomEvent('change', { detail: { status: session.status } }));
     }
 
     disconnectedCallback(): void {
