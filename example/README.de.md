@@ -1,12 +1,13 @@
 🌐 [English](README.md) · [Español](README.es.md) · [Français](README.fr.md) · [Português](README.pt.md) · [Deutsch](README.de.md) · [Polski](README.pl.md)
 
-# `@studiolxd/react-scorm` — Interaktive Demo
+# `@studiolxd/scorm` — Interaktive Demo
 
-Eine interaktive, voll funktionsfähige Beispielanwendung, die alle Funktionen der
-[`@studiolxd/react-scorm`](https://www.npmjs.com/package/@studiolxd/react-scorm)-Bibliothek demonstriert.
+Eine interaktive, voll funktionsfähige Beispielanwendung, die jede Funktion der
+[`@studiolxd/scorm`](https://www.npmjs.com/package/@studiolxd/scorm)-Bibliothek demonstriert — einschließlich des
+frameworkunabhängigen Kerns (Vanilla) und der `<scorm-session>` Web Component.
 
-Erstellt mit **React 19 + TypeScript + Vite**. Läuft vollständig im Browser mithilfe des
-**mock-Modus** der Bibliothek — kein Learning Management System (LMS) erforderlich.
+Erstellt mit **React 19 + TypeScript + Vite** (unter Verwendung des `@studiolxd/scorm/react`-Adapters). Läuft
+vollständig im Browser mithilfe des **Mock-Modus** der Bibliothek — kein Learning Management System (LMS) erforderlich.
 
 ---
 
@@ -23,27 +24,32 @@ npm run dev
 
 ## Was diese Demo zeigt
 
-Die App besitzt einen **SCORM-Versionsumschalter** in der Kopfzeile (1.2 / 2004). Das Umschalten der Version mountet den `ScormProvider` mit der neuen Version neu und setzt dabei den gesamten Zustand zurück. So lässt sich das Verhalten beider SCORM-Standards direkt vergleichen.
+Die App besitzt einen **SCORM-Versionsumschalter** in der Kopfzeile (1.2 / 2004). Das Umschalten der Version
+mountet den `ScormProvider` mit der neuen Version neu und setzt dabei den gesamten Zustand zurück. So lässt sich
+das Verhalten beider SCORM-Standards direkt nebeneinander vergleichen.
 
-### 9 Demo-Bereiche
+### 10 Demo-Bereiche
 
 | Tab | Demonstrierte Funktionen |
-|-----|--------------------------|
-| **Lifecycle** | `initialize()`, `commit()`, `terminate()`, Live-`ScormStatus`, `useScormAutoTerminate` |
+|-----|-----------------------|
+| **Lifecycle** | `initialize()`, `commit()`, `terminate()`, Live-`ScormStatus`, `useScormAutoTerminate`, `useScormAutoCommit` |
 | **Learner** | `getLearnerId()`, `getLearnerName()`, `getLaunchData()`, `getMode()`, `getCredit()`, `getEntry()`, `getMasteryScore()`, `getMaxTimeAllowed()`, `getTimeLimitAction()` |
 | **Status** | `setComplete()`, `setIncomplete()`, `setPassed()`, `setFailed()`, `getCompletionStatus()`, `getSuccessStatus()` |
 | **Score** | `setScore({ raw, min, max, scaled? })`, `getScore()`, `getPreferences()`, `setPreference()` |
 | **Location** | `setLocation()`, `getLocation()`, `setSuspendData()`, `getSuspendData()`, `setSessionTime()`, `getTotalTime()`, `setExit()` |
 | **Objectives** | `setObjective()`, `getObjective()`, `getObjectiveCount()` — Formular passt sich an 1.2/2004 an |
-| **Interactions** | `recordInteraction()`, `getInteractionCount()` — Live-Quiz mit 4 Fragen und visueller Richtig/Falsch-Rückmeldung |
-| **Comments** | `addLearnerComment()`, `getLearnerCommentCount()`, `getLmsCommentCount()` |
+| **Interactions** | `recordInteraction()`, `getInteractionCount()`, `getInteraction()` — Live-Quiz mit 4 Fragen und visueller Richtig/Falsch-Rückmeldung |
+| **Comments** | `addLearnerComment()`, `getLearnerCommentCount()`, `getLmsCommentCount()`, `getLearnerComments()`, `getLmsComments()` |
 | **Advanced** | `getRaw()`, `setRaw()`, `setProgressMeasure()`, `setNavRequest()`, `getNavRequestValid()`, `formatScorm12Time()`, `formatScorm2004Time()` |
+| **Vanilla / WC** | `createScormSession()` (frameworkunabhängig) und die `<scorm-session>` Web Component, live im Mock-Modus |
 
 ---
 
-## Über den mock-Modus
+## Über den Mock-Modus
 
-Die App verwendet `noLmsBehavior: 'mock'` im `ScormProvider`. Damit wird eine In-Memory-SCORM-API aktiviert, die sich wie ein echtes LMS verhält — kein Server erforderlich. Alle Daten werden im Arbeitsspeicher gehalten und gehen beim Seitenaktualisieren verloren.
+Die App verwendet `noLmsBehavior: 'mock'` im `ScormProvider`. Damit wird eine In-Memory-SCORM-API
+aktiviert, die sich wie ein echtes LMS verhält — kein Server erforderlich. Alle Daten werden im Arbeitsspeicher
+gehalten und gehen beim Seitenaktualisieren verloren.
 
 ```tsx
 // App.tsx
@@ -60,7 +66,8 @@ Die App verwendet `noLmsBehavior: 'mock'` im `ScormProvider`. Damit wird eine In
 
 ## Bibliotheksübersicht
 
-`@studiolxd/react-scorm` ist eine headless TypeScript/React-Laufzeitbibliothek für SCORM.
+`@studiolxd/scorm` ist eine Headless-TypeScript-SCORM-Laufzeitbibliothek: ein frameworkunabhängiger Kern
+mit Adaptern für React, Vue, Angular, Svelte und Web Components. Diese Demo verwendet den React-Adapter.
 
 ### Grundkonzepte
 
@@ -98,7 +105,7 @@ useEffect(() => {
 }, [api]);
 ```
 
-Oder verwende den optionalen Auto-Terminate-hook:
+Oder verwende den optionalen Auto-Terminate-Hook:
 
 ```tsx
 import { useScormAutoTerminate } from '@studiolxd/scorm/react';
@@ -144,7 +151,8 @@ if (r.ok) {
 
 **4. Versionsneutrale API**
 
-Dieselben Methodennamen funktionieren für SCORM 1.2 und 2004. Die Bibliothek bildet sie intern auf die richtigen CMI-Pfade ab:
+Dieselben Methodennamen funktionieren für SCORM 1.2 und 2004. Die Bibliothek bildet sie intern auf die
+richtigen CMI-Pfade ab:
 
 ```tsx
 // Works identically for 1.2 and 2004
@@ -233,7 +241,7 @@ api.getNavRequestValid('continue')
 ### SCORM 1.2 vs 2004 — Kurzübersicht
 
 | Funktion | SCORM 1.2 | SCORM 2004 |
-|----------|-----------|------------|
+|---------|-----------|------------|
 | Abschluss + Bestehen | Einzelner `lesson_status` | Getrennte `completion_status` + `success_status` |
 | Skalierter Score | Nicht verfügbar | `cmi.score.scaled` (-1 bis 1) |
 | Maximale Suspend-Data | 4.096 Zeichen | 64.000 Zeichen |
@@ -301,7 +309,7 @@ Wiederverwendbare CSS-Klassen: `.section`, `.feature-block`, `.controls`, `.fiel
 Vollständiger Strict-Modus aktiviert in `tsconfig.app.json`:
 
 | Option | Wert | Effekt |
-|--------|------|--------|
+|--------|-------|--------|
 | `strict` | `true` | Aktiviert alle strikten Typprüfungs-Flags |
 | `noUnusedLocals` | `true` | Fehler bei ungenutzten Variablen |
 | `noUnusedParameters` | `true` | Fehler bei ungenutzten Funktionsparametern |
@@ -316,7 +324,7 @@ Zwei tsconfig-Ziele: `tsconfig.app.json` (src/, ES2022 + DOM) und `tsconfig.node
 `eslint.config.js` verwendet das Flat-Config-Format mit vier Regelsets:
 
 | Plugin | Version | Bereitgestellte Regeln |
-|--------|---------|------------------------|
+|--------|---------|----------------|
 | `@eslint/js` | 9.39 | ESLint-empfohlene JS-Regeln |
 | `typescript-eslint` | 8.48 | TypeScript-spezifisches Linting |
 | `eslint-plugin-react-hooks` | 7.0 | Exhaustive deps, rules of hooks |
@@ -327,7 +335,7 @@ Ausführen mit `npm run lint`.
 ### Skripte
 
 | Skript | Befehl | Beschreibung |
-|--------|--------|--------------|
+|--------|---------|-------------|
 | `npm run dev` | `vite` | Startet den Entwicklungsserver unter `http://localhost:5173` |
 | `npm run build` | `tsc -b && vite build` | Typprüfung + Produktionsbundle |
 | `npm run lint` | `eslint .` | Lintet alle `.ts`- / `.tsx`-Dateien |
@@ -360,7 +368,7 @@ Leitet die Erstellung unverwechselbarer, produktionsreifer Frontend-Oberflächen
 React-Leistungsoptimierungsrichtlinien, gepflegt von Vercel Engineering. Enthält **57 Regeln in 8 Kategorien**, die beim Schreiben oder Überprüfen von React-Komponenten, Datenabruf, Bundle-Konfiguration oder leistungssensiblem Code angewendet werden:
 
 | Kategorie | Regeln | Schwerpunkt |
-|-----------|:------:|-------------|
+|----------|:-----:|-------|
 | `rerender` | 13 | Unnötige Re-Renders vermeiden (memo, abgeleiteter Zustand, Refs) |
 | `js` | 12 | JavaScript-Leistung (Caching, frühe Rückgaben, effiziente Datenstrukturen) |
 | `rendering` | 10 | Render-Optimierung (bedingtes Rendern, Hydratisierung, Übergänge) |

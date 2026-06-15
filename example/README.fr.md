@@ -1,11 +1,13 @@
 🌐 [English](README.md) · [Español](README.es.md) · [Français](README.fr.md) · [Português](README.pt.md) · [Deutsch](README.de.md) · [Polski](README.pl.md)
 
-# `@studiolxd/react-scorm` — Démo interactive
+# `@studiolxd/scorm` — Démo interactive
 
-Une application de démonstration interactive et entièrement fonctionnelle qui illustre chaque fonctionnalité de la bibliothèque
-[`@studiolxd/react-scorm`](https://www.npmjs.com/package/@studiolxd/react-scorm).
+Une application de démonstration interactive et entièrement fonctionnelle qui illustre chaque fonctionnalité de la
+bibliothèque [`@studiolxd/scorm`](https://www.npmjs.com/package/@studiolxd/scorm) — y compris le
+cœur agnostique vis-à-vis du framework (vanilla) et le Web Component `<scorm-session>`.
 
-Construite avec **React 19 + TypeScript + Vite**. Fonctionne entièrement dans le navigateur grâce au **mode mock** de la bibliothèque — aucun système de gestion de l'apprentissage (LMS) n'est nécessaire.
+Construite avec **React 19 + TypeScript + Vite** (en utilisant l'adaptateur `@studiolxd/scorm/react`). Fonctionne
+entièrement dans le navigateur grâce au **mode mock** de la bibliothèque — aucun système de gestion de l'apprentissage (LMS) n'est nécessaire.
 
 ---
 
@@ -22,27 +24,32 @@ Ouvrez `http://localhost:5173` dans votre navigateur.
 
 ## Ce que montre cette démo
 
-L'application dispose d'un **sélecteur de version SCORM** dans l'en-tête (1.2 / 2004). Changer de version recrée le `ScormProvider` avec la nouvelle version et réinitialise tout l'état. Cela vous permet de comparer le comportement des deux standards SCORM côte à côte.
+L'application dispose d'un **sélecteur de version SCORM** dans l'en-tête (1.2 / 2004). Changer de version
+recrée le `ScormProvider` avec la nouvelle version et réinitialise tout l'état. Cela vous permet de comparer
+le comportement des deux standards SCORM côte à côte.
 
-### 9 sections de démonstration
+### 10 sections de démonstration
 
 | Onglet | Fonctionnalités illustrées |
-|--------|---------------------------|
-| **Lifecycle** | `initialize()`, `commit()`, `terminate()`, `ScormStatus` en direct, `useScormAutoTerminate` |
+|-----|-----------------------|
+| **Lifecycle** | `initialize()`, `commit()`, `terminate()`, `ScormStatus` en direct, `useScormAutoTerminate`, `useScormAutoCommit` |
 | **Learner** | `getLearnerId()`, `getLearnerName()`, `getLaunchData()`, `getMode()`, `getCredit()`, `getEntry()`, `getMasteryScore()`, `getMaxTimeAllowed()`, `getTimeLimitAction()` |
 | **Status** | `setComplete()`, `setIncomplete()`, `setPassed()`, `setFailed()`, `getCompletionStatus()`, `getSuccessStatus()` |
 | **Score** | `setScore({ raw, min, max, scaled? })`, `getScore()`, `getPreferences()`, `setPreference()` |
 | **Location** | `setLocation()`, `getLocation()`, `setSuspendData()`, `getSuspendData()`, `setSessionTime()`, `getTotalTime()`, `setExit()` |
 | **Objectives** | `setObjective()`, `getObjective()`, `getObjectiveCount()` — formulaire adapté à 1.2/2004 |
-| **Interactions** | `recordInteraction()`, `getInteractionCount()` — quiz en direct de 4 questions avec retour visuel correct/incorrect |
-| **Comments** | `addLearnerComment()`, `getLearnerCommentCount()`, `getLmsCommentCount()` |
+| **Interactions** | `recordInteraction()`, `getInteractionCount()`, `getInteraction()` — quiz en direct de 4 questions avec retour visuel correct/incorrect |
+| **Comments** | `addLearnerComment()`, `getLearnerCommentCount()`, `getLmsCommentCount()`, `getLearnerComments()`, `getLmsComments()` |
 | **Advanced** | `getRaw()`, `setRaw()`, `setProgressMeasure()`, `setNavRequest()`, `getNavRequestValid()`, `formatScorm12Time()`, `formatScorm2004Time()` |
+| **Vanilla / WC** | `createScormSession()` (agnostique vis-à-vis du framework) et le Web Component `<scorm-session>`, en direct en mode mock |
 
 ---
 
 ## À propos du mode mock
 
-L'application utilise `noLmsBehavior: 'mock'` dans `ScormProvider`. Cela active une API SCORM en mémoire qui se comporte comme un vrai LMS — aucun serveur requis. Toutes les données sont stockées en mémoire et perdues lors du rechargement de la page.
+L'application utilise `noLmsBehavior: 'mock'` dans `ScormProvider`. Cela active une API SCORM
+en mémoire qui se comporte comme un vrai LMS — aucun serveur requis. Toutes les données sont stockées en mémoire et perdues
+lors du rechargement de la page.
 
 ```tsx
 // App.tsx
@@ -59,7 +66,8 @@ L'application utilise `noLmsBehavior: 'mock'` dans `ScormProvider`. Cela active 
 
 ## Présentation de la bibliothèque
 
-`@studiolxd/react-scorm` est une bibliothèque TypeScript/React headless pour le runtime SCORM.
+`@studiolxd/scorm` est une bibliothèque TypeScript headless pour le runtime SCORM : un cœur agnostique vis-à-vis du framework
+avec des adaptateurs pour React, Vue, Angular, Svelte et Web Components. Cette démo utilise l'adaptateur React.
 
 ### Concepts fondamentaux
 
@@ -143,7 +151,8 @@ if (r.ok) {
 
 **4. API indépendante de la version**
 
-Les mêmes noms de méthodes fonctionnent pour SCORM 1.2 et 2004. La bibliothèque effectue la correspondance vers les bons chemins CMI en interne :
+Les mêmes noms de méthodes fonctionnent pour SCORM 1.2 et 2004. La bibliothèque effectue la correspondance vers les bons
+chemins CMI en interne :
 
 ```tsx
 // Works identically for 1.2 and 2004
@@ -232,7 +241,7 @@ api.getNavRequestValid('continue')
 ### Comparatif SCORM 1.2 / 2004
 
 | Fonctionnalité | SCORM 1.2 | SCORM 2004 |
-|----------------|-----------|------------|
+|---------|-----------|------------|
 | Complétion + réussite | `lesson_status` unique | `completion_status` + `success_status` séparés |
 | Score normalisé | Non disponible | `cmi.score.scaled` (-1 à 1) |
 | Taille max des données suspendues | 4 096 caractères | 64 000 caractères |
@@ -295,12 +304,12 @@ Classes CSS réutilisables : `.section`, `.feature-block`, `.controls`, `.field`
 - Transpilation TypeScript gérée par Vite (esbuild) — pas d'émission `tsc`
 - Build de production : `tsc -b` pour la vérification de types + `vite build` pour le bundling
 
-### Language — TypeScript 5.9 (strict)
+### Langage — TypeScript 5.9 (strict)
 
 Mode strict complet activé dans `tsconfig.app.json` :
 
 | Option | Valeur | Effet |
-|--------|--------|-------|
+|--------|-------|--------|
 | `strict` | `true` | Active tous les flags de vérification de types stricte |
 | `noUnusedLocals` | `true` | Erreur sur les variables inutilisées |
 | `noUnusedParameters` | `true` | Erreur sur les paramètres de fonction inutilisés |
@@ -315,7 +324,7 @@ Deux cibles tsconfig : `tsconfig.app.json` (src/, ES2022 + DOM) et `tsconfig.nod
 `eslint.config.js` utilise le format de configuration plate avec quatre ensembles de règles :
 
 | Plugin | Version | Règles fournies |
-|--------|---------|-----------------|
+|--------|---------|----------------|
 | `@eslint/js` | 9.39 | Règles JS recommandées ESLint |
 | `typescript-eslint` | 8.48 | Linting spécifique TypeScript |
 | `eslint-plugin-react-hooks` | 7.0 | Dépendances exhaustives, règles des hooks |
@@ -326,7 +335,7 @@ Exécuter avec `npm run lint`.
 ### Scripts
 
 | Script | Commande | Description |
-|--------|----------|-------------|
+|--------|---------|-------------|
 | `npm run dev` | `vite` | Démarrer le serveur de développement sur `http://localhost:5173` |
 | `npm run build` | `tsc -b && vite build` | Vérification de types + bundle de production |
 | `npm run lint` | `eslint .` | Analyser tous les fichiers `.ts` / `.tsx` |
@@ -359,7 +368,7 @@ Guide la création d'interfaces frontend distinctives et prêtes pour la product
 Directives d'optimisation des performances React maintenues par Vercel Engineering. Contient **57 règles réparties en 8 catégories**, appliquées lors de l'écriture ou de la révision de composants React, de la récupération de données, de la configuration des bundles ou de tout code sensible aux performances :
 
 | Catégorie | Règles | Focus |
-|-----------|:------:|-------|
+|----------|:-----:|-------|
 | `rerender` | 13 | Éviter les re-rendus inutiles (memo, état dérivé, refs) |
 | `js` | 12 | Performances JavaScript (mise en cache, sorties anticipées, structures de données efficaces) |
 | `rendering` | 10 | Optimisation du rendu (rendu conditionnel, hydratation, transitions) |

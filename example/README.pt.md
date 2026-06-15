@@ -1,53 +1,55 @@
 🌐 [English](README.md) · [Español](README.es.md) · [Français](README.fr.md) · [Português](README.pt.md) · [Deutsch](README.de.md) · [Polski](README.pl.md)
 
-# `@studiolxd/react-scorm` — Demo Interativa
+# `@studiolxd/scorm` — Demonstração Interativa
 
-Uma aplicação de exemplo interativa e totalmente funcional que demonstra todos os recursos da
-biblioteca [`@studiolxd/react-scorm`](https://www.npmjs.com/package/@studiolxd/react-scorm).
+Uma aplicação de exemplo interativa e totalmente funcional que demonstra todas as funcionalidades da
+biblioteca [`@studiolxd/scorm`](https://www.npmjs.com/package/@studiolxd/scorm) — incluindo o
+núcleo agnóstico de framework (vanilla) e o Web Component `<scorm-session>`.
 
-Construída com **React 19 + TypeScript + Vite**. Roda inteiramente no navegador usando o
-**modo mock** da biblioteca — nenhum Sistema de Gestão de Aprendizagem (LMS) é necessário.
+Construída com **React 19 + TypeScript + Vite** (usando o adaptador `@studiolxd/scorm/react`). Corre
+inteiramente no browser através do **modo mock** da biblioteca — sem necessidade de um Learning Management System (LMS).
 
 ---
 
-## Como Começar
+## Primeiros Passos
 
 ```bash
 npm install
 npm run dev
 ```
 
-Abra `http://localhost:5173` no seu navegador.
+Abra `http://localhost:5173` no seu browser.
 
 ---
 
-## O Que Esta Demo Mostra
+## O Que Esta Demonstração Mostra
 
-O aplicativo possui um **seletor de versão SCORM** no cabeçalho (1.2 / 2004). Alternar a versão
-remonta o `ScormProvider` com a nova versão, redefinindo todo o estado. Isso permite comparar
-o comportamento dos dois padrões SCORM lado a lado.
+A aplicação tem um **seletor de versão SCORM** no cabeçalho (1.2 / 2004). Alternar de versão
+volta a montar o `ScormProvider` com a nova versão, repondo todo o estado. Isto permite-lhe comparar
+o comportamento de ambos os standards SCORM lado a lado.
 
-### 9 Seções de Demo
+### 10 Secções de Demonstração
 
-| Aba | Funcionalidades demonstradas |
-|-----|------------------------------|
-| **Lifecycle** | `initialize()`, `commit()`, `terminate()`, `ScormStatus` ao vivo, `useScormAutoTerminate` |
+| Separador | Funcionalidades demonstradas |
+|-----|-----------------------|
+| **Lifecycle** | `initialize()`, `commit()`, `terminate()`, `ScormStatus` ao vivo, `useScormAutoTerminate`, `useScormAutoCommit` |
 | **Learner** | `getLearnerId()`, `getLearnerName()`, `getLaunchData()`, `getMode()`, `getCredit()`, `getEntry()`, `getMasteryScore()`, `getMaxTimeAllowed()`, `getTimeLimitAction()` |
 | **Status** | `setComplete()`, `setIncomplete()`, `setPassed()`, `setFailed()`, `getCompletionStatus()`, `getSuccessStatus()` |
 | **Score** | `setScore({ raw, min, max, scaled? })`, `getScore()`, `getPreferences()`, `setPreference()` |
 | **Location** | `setLocation()`, `getLocation()`, `setSuspendData()`, `getSuspendData()`, `setSessionTime()`, `getTotalTime()`, `setExit()` |
-| **Objectives** | `setObjective()`, `getObjective()`, `getObjectiveCount()` — formulário se adapta ao 1.2/2004 |
-| **Interactions** | `recordInteraction()`, `getInteractionCount()` — quiz ao vivo com 4 perguntas e feedback visual de certo/errado |
-| **Comments** | `addLearnerComment()`, `getLearnerCommentCount()`, `getLmsCommentCount()` |
+| **Objectives** | `setObjective()`, `getObjective()`, `getObjectiveCount()` — o formulário adapta-se a 1.2/2004 |
+| **Interactions** | `recordInteraction()`, `getInteractionCount()`, `getInteraction()` — quiz ao vivo de 4 perguntas com feedback visual de correto/incorreto |
+| **Comments** | `addLearnerComment()`, `getLearnerCommentCount()`, `getLmsCommentCount()`, `getLearnerComments()`, `getLmsComments()` |
 | **Advanced** | `getRaw()`, `setRaw()`, `setProgressMeasure()`, `setNavRequest()`, `getNavRequestValid()`, `formatScorm12Time()`, `formatScorm2004Time()` |
+| **Vanilla / WC** | `createScormSession()` (agnóstico de framework) e o Web Component `<scorm-session>`, ao vivo em modo mock |
 
 ---
 
 ## Sobre o Modo Mock
 
-O aplicativo usa `noLmsBehavior: 'mock'` no `ScormProvider`. Isso ativa uma API SCORM em
-memória que se comporta como um LMS real — sem necessidade de servidor. Todos os dados são
-armazenados em memória e perdidos ao atualizar a página.
+A aplicação usa `noLmsBehavior: 'mock'` no `ScormProvider`. Isto ativa uma API SCORM em memória
+que se comporta como um LMS real — sem necessidade de servidor. Todos os dados são guardados em memória e perdem-se
+ao atualizar a página.
 
 ```tsx
 // App.tsx
@@ -64,7 +66,8 @@ armazenados em memória e perdidos ao atualizar a página.
 
 ## Visão Geral da Biblioteca
 
-`@studiolxd/react-scorm` é uma biblioteca headless TypeScript/React para runtime SCORM.
+`@studiolxd/scorm` é uma biblioteca de runtime SCORM headless em TypeScript: um núcleo agnóstico de framework
+com adaptadores para React, Vue, Angular, Svelte e Web Components. Esta demonstração usa o adaptador React.
 
 ### Conceitos Fundamentais
 
@@ -92,7 +95,7 @@ function Lesson() {
 
 **2. Ciclo de Vida Explícito**
 
-A biblioteca nunca inicializa automaticamente. Você chama `api.initialize()` quando sua lição começa:
+A biblioteca nunca inicializa automaticamente. Você chama `api.initialize()` quando a sua lição começa:
 
 ```tsx
 useEffect(() => {
@@ -102,7 +105,7 @@ useEffect(() => {
 }, [api]);
 ```
 
-Ou use o hook opcional de terminação automática:
+Ou use o hook opcional de auto-terminate:
 
 ```tsx
 import { useScormAutoTerminate } from '@studiolxd/scorm/react';
@@ -113,7 +116,7 @@ function Lesson() {
 }
 ```
 
-Ou use `useScormSession()` para estado reativo de inicialização/encerramento:
+Ou use `useScormSession()` para estado reativo de initialized/terminated:
 
 ```tsx
 import { useScormSession } from '@studiolxd/scorm/react';
@@ -128,11 +131,11 @@ function Course() {
 }
 ```
 
-`useScormSession()` é um superconjunto de `useScorm()` — retorna tudo que `useScorm()` retorna (`api`, `status`, `raw`) mais os booleanos reativos `initialized`/`terminated` e os métodos encapsulados `initialize()`, `terminate()`, `commit()` que atualizam esse estado automaticamente.
+`useScormSession()` é um superconjunto de `useScorm()` — devolve tudo o que `useScorm()` devolve (`api`, `status`, `raw`) mais os booleanos reativos `initialized`/`terminated` e os métodos envolvidos `initialize()`, `terminate()`, `commit()` que atualizam esse estado automaticamente.
 
 **3. Tratamento de Erros Baseado em Result**
 
-Todo método da API retorna um `Result<T, ScormError>` — sem exceções lançadas:
+Cada método da API devolve um `Result<T, ScormError>` — sem exceções lançadas:
 
 ```tsx
 const r = api.setScore({ raw: 85, min: 0, max: 100 });
@@ -146,10 +149,10 @@ if (r.ok) {
 }
 ```
 
-**4. API Agnóstica à Versão**
+**4. API Agnóstica de Versão**
 
-Os mesmos nomes de métodos funcionam tanto para SCORM 1.2 quanto para 2004. A biblioteca mapeia
-para os caminhos CMI corretos internamente:
+Os mesmos nomes de métodos funcionam tanto para SCORM 1.2 como para 2004. A biblioteca mapeia para os caminhos
+CMI corretos internamente:
 
 ```tsx
 // Works identically for 1.2 and 2004
@@ -160,16 +163,16 @@ api.setLocation('chapter-3');
 api.setSuspendData(JSON.stringify(myState));
 ```
 
-### Principais Métodos da API
+### Métodos Principais da API
 
-#### Ciclo de Vida
+#### Ciclo de vida
 ```tsx
 api.initialize()   // → Result<true, ScormError>
 api.commit()       // → Result<true, ScormError>
 api.terminate()    // → Result<true, ScormError>
 ```
 
-#### Status
+#### Estado
 ```tsx
 api.setComplete()          // → Result<string, ScormError>
 api.setIncomplete()        // → Result<string, ScormError>
@@ -185,7 +188,7 @@ api.setScore({ raw, min, max, scaled? })  // → Result<true, ScormError>
 api.getScore()                            // → Result<ScoreData, ScormError>
 ```
 
-`raw`, `min`, `max` devem ser números finitos (NaN/Infinity → erro 405). `scaled` deve estar em `[-1, 1]` (erro 407 se fora do intervalo). Para SCORM 1.2, `scaled` é silenciosamente ignorado.
+`raw`, `min`, `max` têm de ser números finitos (NaN/Infinity → erro 405). `scaled` tem de estar em `[-1, 1]` (erro 407 se estiver fora do intervalo). No SCORM 1.2, `scaled` é silenciosamente ignorado.
 
 #### Localização e Estado
 ```tsx
@@ -220,33 +223,33 @@ api.addLearnerComment(text, location?, timestamp?)  // → Result<true, ScormErr
 api.getLearnerCommentCount()                        // → Result<number, ScormError>
 ```
 
-Para SCORM 1.2, todos os comentários são concatenados em uma única string — o valor combinado é limitado a 4096 caracteres (erro 405 se excedido). O SCORM 2004 usa entradas indexadas em `cmi.comments_from_learner` sem essa limitação.
+No SCORM 1.2, todos os comentários são concatenados numa única string — o valor combinado está limitado a 4096 caracteres (erro 405 se for excedido). O SCORM 2004 usa entradas indexadas em `cmi.comments_from_learner` sem esse limite.
 
-#### Acesso Direto (escape hatch)
+#### Escape Hatch Raw
 ```tsx
 api.getRaw('cmi.learner_id')          // → Result<string, ScormError>
 api.setRaw('cmi.progress_measure', '0.75')  // → Result<string, ScormError>
 ```
 
-#### Exclusivo do SCORM 2004
+#### Apenas SCORM 2004
 ```tsx
 api.setProgressMeasure(0.75)          // no-op in 1.2
 api.setNavRequest('continue')
 api.getNavRequestValid('continue')
 ```
 
-### Comparativo SCORM 1.2 vs 2004
+### Resumo SCORM 1.2 vs 2004
 
 | Funcionalidade | SCORM 1.2 | SCORM 2004 |
-|----------------|-----------|------------|
+|---------|-----------|------------|
 | Conclusão + aprovação | `lesson_status` único | `completion_status` + `success_status` separados |
-| Pontuação normalizada | Não disponível | `cmi.score.scaled` (-1 a 1) |
-| Tamanho máximo dos dados de suspensão | 4.096 caracteres | 64.000 caracteres |
+| Pontuação escalada | Não disponível | `cmi.score.scaled` (-1 a 1) |
+| Máx. de dados de suspensão | 4.096 caracteres | 64.000 caracteres |
 | Formato do tempo de sessão | `HH:MM:SS.SS` | `PT#H#M#S` (ISO 8601) |
 | Medida de progresso | Não disponível | `cmi.progress_measure` (0–1) |
-| Navegação | Não disponível | Requisições de navegação ADL |
+| Navegação | Não disponível | Pedidos de navegação ADL |
 | Comentários | String única | Array indexado com localização + timestamp |
-| Caminho do ID do aprendiz | `cmi.core.student_id` | `cmi.learner_id` |
+| Caminho do ID do aluno | `cmi.core.student_id` | `cmi.learner_id` |
 
 ---
 
@@ -272,7 +275,7 @@ src/
 
 ### Sistema de Design (App.css)
 
-O aplicativo usa propriedades CSS customizadas para um tema escuro consistente:
+A aplicação usa propriedades CSS personalizadas para um tema escuro consistente:
 
 ```css
 --bg            /* #0a0c10 — page background */
@@ -291,56 +294,56 @@ Classes CSS reutilizáveis: `.section`, `.feature-block`, `.controls`, `.field`,
 
 ---
 
-## Development Stack
+## Stack de Desenvolvimento
 
 ### Build — Vite 7
 
-O [Vite](https://vite.dev) alimenta tanto o servidor de desenvolvimento quanto o build de produção.
+O [Vite](https://vite.dev) alimenta tanto o servidor de desenvolvimento como o build de produção.
 
 - HMR instantâneo via `@vitejs/plugin-react` (React Fast Refresh)
-- Transpilação TypeScript gerenciada pelo Vite (esbuild) — sem emissão de `tsc`
-- Build de produção: `tsc -b` para verificação de tipos + `vite build` para empacotamento
+- Transpilação de TypeScript tratada pelo Vite (esbuild) — sem emissão por `tsc`
+- Build de produção: `tsc -b` para verificação de tipos + `vite build` para o bundling
 
-### Language — TypeScript 5.9 (strict)
+### Linguagem — TypeScript 5.9 (strict)
 
-Modo strict completo habilitado em `tsconfig.app.json`:
+Modo strict completo ativado em `tsconfig.app.json`:
 
 | Opção | Valor | Efeito |
-|-------|-------|--------|
-| `strict` | `true` | Ativa todos os flags de verificação de tipo estrita |
+|--------|-------|--------|
+| `strict` | `true` | Ativa todas as flags de verificação de tipos estrita |
 | `noUnusedLocals` | `true` | Erro em variáveis não utilizadas |
 | `noUnusedParameters` | `true` | Erro em parâmetros de função não utilizados |
-| `noFallthroughCasesInSwitch` | `true` | Impõe switch statements exaustivos |
+| `noFallthroughCasesInSwitch` | `true` | Força instruções switch exaustivas |
 | `verbatimModuleSyntax` | `true` | Preserva a sintaxe de import/export exatamente |
-| `noEmit` | `true` | Somente verificação de tipos — o Vite cuida da compilação |
+| `noEmit` | `true` | Apenas verificação de tipos — o Vite trata da compilação |
 
-Dois targets de tsconfig: `tsconfig.app.json` (src/, ES2022 + DOM) e `tsconfig.node.json` (vite.config.ts, ES2023 + tipos Node).
+Dois alvos tsconfig: `tsconfig.app.json` (src/, ES2022 + DOM) e `tsconfig.node.json` (vite.config.ts, ES2023 + tipos Node).
 
 ### Linting — ESLint 9 (flat config)
 
 `eslint.config.js` usa o formato flat config com quatro conjuntos de regras:
 
 | Plugin | Versão | Regras fornecidas |
-|--------|--------|-------------------|
+|--------|---------|----------------|
 | `@eslint/js` | 9.39 | Regras JS recomendadas do ESLint |
-| `typescript-eslint` | 8.48 | Linting específico para TypeScript |
-| `eslint-plugin-react-hooks` | 7.0 | Exhaustive deps, rules of hooks |
-| `eslint-plugin-react-refresh` | 0.4 | Validação de exportação de componentes React Fast Refresh |
+| `typescript-eslint` | 8.48 | Linting específico de TypeScript |
+| `eslint-plugin-react-hooks` | 7.0 | Dependências exaustivas, regras dos hooks |
+| `eslint-plugin-react-refresh` | 0.4 | Validação da exportação de componentes do React Fast Refresh |
 
 Execute com `npm run lint`.
 
 ### Scripts
 
 | Script | Comando | Descrição |
-|--------|---------|-----------|
+|--------|---------|-------------|
 | `npm run dev` | `vite` | Inicia o servidor de desenvolvimento em `http://localhost:5173` |
 | `npm run build` | `tsc -b && vite build` | Verificação de tipos + bundle de produção |
-| `npm run lint` | `eslint .` | Lint em todos os arquivos `.ts` / `.tsx` |
-| `npm run preview` | `vite preview` | Visualiza o build de produção localmente |
+| `npm run lint` | `eslint .` | Faz lint de todos os ficheiros `.ts` / `.tsx` |
+| `npm run preview` | `vite preview` | Pré-visualiza o build de produção localmente |
 
 ### CI — GitHub Actions
 
-Executado em todo PR e push para `main` (Node 20, Ubuntu):
+Corre em cada PR e em cada push para `main` (Node 20, Ubuntu):
 
 ```
 npm ci → npm run lint → npm run build
@@ -348,37 +351,37 @@ npm ci → npm run lint → npm run build
 
 ---
 
-## Habilidades do Claude Code
+## Skills do Claude Code
 
-Duas habilidades de desenvolvimento com IA estão pré-instaladas para uso com o [Claude Code](https://claude.ai/claude-code):
+Duas skills de desenvolvimento de IA vêm pré-instaladas para uso com o [Claude Code](https://claude.ai/claude-code):
 
 ### `frontend-design` — Anthropic
 
 > Fonte: `anthropics/skills`
 
-Orienta a criação de interfaces frontend distintivas e prontas para produção. Acionada ao construir componentes, páginas ou qualquer UI web. Impõe uma direção estética marcante, escolhas de design intencionais e implementação refinada — evitando explicitamente estéticas genéricas geradas por IA.
+Orienta a criação de interfaces frontend distintivas e de nível de produção. É despoletada ao construir componentes, páginas ou qualquer UI web. Impõe uma direção estética arrojada, escolhas de design intencionais e uma implementação polida — evitando explicitamente estéticas genéricas geradas por IA.
 
 ### `vercel-react-best-practices` — Vercel
 
 > Fonte: `vercel-labs/agent-skills`
 
-Diretrizes de otimização de desempenho para React mantidas pela Vercel Engineering. Contém **57 regras em 8 categorias**, aplicadas ao escrever ou revisar componentes React, busca de dados, configuração de bundle ou qualquer código sensível a desempenho:
+Diretrizes de otimização de desempenho de React mantidas pela Vercel Engineering. Contém **57 regras em 8 categorias**, aplicadas ao escrever ou rever componentes React, fetch de dados, configuração de bundle ou qualquer código sensível ao desempenho:
 
 | Categoria | Regras | Foco |
-|-----------|:------:|------|
-| `rerender` | 13 | Evitando re-renderizações desnecessárias (memo, estado derivado, refs) |
-| `js` | 12 | Desempenho JavaScript (cache, saídas antecipadas, estruturas de dados eficientes) |
-| `rendering` | 10 | Otimização de renderização (renderização condicional, hidratação, transições) |
-| `server` | 7 | Padrões do lado do servidor (busca paralela, cache, ações de autenticação) |
-| `async` | 5 | Padrões assíncronos (limites Suspense, await adiado, dependências paralelas) |
-| `bundle` | 5 | Otimização de bundle (importações dinâmicas, arquivos barrel, pré-carregamento) |
-| `client` | 4 | Padrões do lado do cliente (event listeners, esquema localStorage, deduplicação SWR) |
-| `advanced` | 3 | Padrões avançados (refs de event handler, init-once, useLatest) |
+|----------|:-----:|-------|
+| `rerender` | 13 | Evitar re-renders desnecessários (memo, estado derivado, refs) |
+| `js` | 12 | Desempenho de JavaScript (caching, saídas antecipadas, estruturas de dados eficientes) |
+| `rendering` | 10 | Otimização de render (renderização condicional, hidratação, transições) |
+| `server` | 7 | Padrões do lado do servidor (fetch paralelo, caching, ações de autenticação) |
+| `async` | 5 | Padrões assíncronos (boundaries de Suspense, await diferido, dependências paralelas) |
+| `bundle` | 5 | Otimização de bundle (imports dinâmicos, barrel files, preloading) |
+| `client` | 4 | Padrões do lado do cliente (event listeners, schema de localStorage, dedup de SWR) |
+| `advanced` | 3 | Padrões avançados (refs de event handlers, init-once, useLatest) |
 
-As habilidades são instaladas em `.agents/skills/` e fixadas em `skills-lock.json`.
+As skills são instaladas em `.agents/skills/` e fixadas em `skills-lock.json`.
 
 ---
 
 ## Licença
 
-MIT — veja [LICENSE](./LICENSE).
+MIT — ver [LICENSE](./LICENSE).

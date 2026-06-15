@@ -1,10 +1,13 @@
 🌐 [English](README.md) · [Español](README.es.md) · [Français](README.fr.md) · [Português](README.pt.md) · [Deutsch](README.de.md) · [Polski](README.pl.md)
 
-# `@studiolxd/react-scorm` — Demo interactiva
+# `@studiolxd/scorm` — Demo interactiva
 
-Una aplicación de ejemplo interactiva y completamente funcional que muestra cada característica de la librería [`@studiolxd/react-scorm`](https://www.npmjs.com/package/@studiolxd/react-scorm).
+Una aplicación de ejemplo interactiva y completamente funcional que muestra cada característica de la
+librería [`@studiolxd/scorm`](https://www.npmjs.com/package/@studiolxd/scorm) — incluyendo el
+núcleo agnóstico al framework (vanilla) y el Web Component `<scorm-session>`.
 
-Construida con **React 19 + TypeScript + Vite**. Se ejecuta íntegramente en el navegador usando el **modo mock** de la librería — no se necesita ningún Learning Management System (LMS).
+Construida con **React 19 + TypeScript + Vite** (usando el adaptador `@studiolxd/scorm/react`). Se ejecuta
+íntegramente en el navegador usando el **modo mock** de la librería — no se necesita ningún Learning Management System (LMS).
 
 ---
 
@@ -21,27 +24,32 @@ Abre `http://localhost:5173` en tu navegador.
 
 ## Qué muestra esta demo
 
-La aplicación tiene un **selector de versión SCORM** en la cabecera (1.2 / 2004). Al cambiar de versión se vuelve a montar el `ScormProvider` con la nueva versión, restableciendo todo el estado. Esto te permite comparar el comportamiento de ambos estándares SCORM lado a lado.
+La aplicación tiene un **selector de versión SCORM** en la cabecera (1.2 / 2004). Al cambiar de versión
+se vuelve a montar el `ScormProvider` con la nueva versión, restableciendo todo el estado. Esto te permite comparar
+el comportamiento de ambos estándares SCORM lado a lado.
 
-### 9 secciones de demo
+### 10 secciones de demo
 
 | Pestaña | Funcionalidades mostradas |
 |---------|--------------------------|
-| **Lifecycle** | `initialize()`, `commit()`, `terminate()`, `ScormStatus` en vivo, `useScormAutoTerminate` |
+| **Lifecycle** | `initialize()`, `commit()`, `terminate()`, `ScormStatus` en vivo, `useScormAutoTerminate`, `useScormAutoCommit` |
 | **Learner** | `getLearnerId()`, `getLearnerName()`, `getLaunchData()`, `getMode()`, `getCredit()`, `getEntry()`, `getMasteryScore()`, `getMaxTimeAllowed()`, `getTimeLimitAction()` |
 | **Status** | `setComplete()`, `setIncomplete()`, `setPassed()`, `setFailed()`, `getCompletionStatus()`, `getSuccessStatus()` |
 | **Score** | `setScore({ raw, min, max, scaled? })`, `getScore()`, `getPreferences()`, `setPreference()` |
 | **Location** | `setLocation()`, `getLocation()`, `setSuspendData()`, `getSuspendData()`, `setSessionTime()`, `getTotalTime()`, `setExit()` |
 | **Objectives** | `setObjective()`, `getObjective()`, `getObjectiveCount()` — el formulario se adapta a 1.2/2004 |
-| **Interactions** | `recordInteraction()`, `getInteractionCount()` — cuestionario en vivo de 4 preguntas con retroalimentación visual de acierto/error |
-| **Comments** | `addLearnerComment()`, `getLearnerCommentCount()`, `getLmsCommentCount()` |
+| **Interactions** | `recordInteraction()`, `getInteractionCount()`, `getInteraction()` — cuestionario en vivo de 4 preguntas con retroalimentación visual de acierto/error |
+| **Comments** | `addLearnerComment()`, `getLearnerCommentCount()`, `getLmsCommentCount()`, `getLearnerComments()`, `getLmsComments()` |
 | **Advanced** | `getRaw()`, `setRaw()`, `setProgressMeasure()`, `setNavRequest()`, `getNavRequestValid()`, `formatScorm12Time()`, `formatScorm2004Time()` |
+| **Vanilla / WC** | `createScormSession()` (agnóstico al framework) y el Web Component `<scorm-session>`, en vivo en modo mock |
 
 ---
 
 ## Sobre el modo mock
 
-La aplicación usa `noLmsBehavior: 'mock'` en `ScormProvider`. Esto activa una API SCORM en memoria que se comporta como un LMS real — no se necesita ningún servidor. Todos los datos se almacenan en memoria y se pierden al recargar la página.
+La aplicación usa `noLmsBehavior: 'mock'` en `ScormProvider`. Esto activa una API SCORM en memoria
+que se comporta como un LMS real — no se necesita ningún servidor. Todos los datos se almacenan en memoria y se pierden
+al recargar la página.
 
 ```tsx
 // App.tsx
@@ -58,7 +66,8 @@ La aplicación usa `noLmsBehavior: 'mock'` en `ScormProvider`. Esto activa una A
 
 ## Descripción general de la librería
 
-`@studiolxd/react-scorm` es una librería headless de runtime SCORM para TypeScript/React.
+`@studiolxd/scorm` es una librería TypeScript headless de runtime SCORM: un núcleo agnóstico al framework
+con adaptadores para React, Vue, Angular, Svelte y Web Components. Esta demo usa el adaptador de React.
 
 ### Conceptos fundamentales
 
@@ -142,7 +151,8 @@ if (r.ok) {
 
 **4. API independiente de la versión**
 
-Los mismos nombres de método funcionan tanto para SCORM 1.2 como para 2004. La librería mapea internamente a las rutas CMI correctas:
+Los mismos nombres de método funcionan tanto para SCORM 1.2 como para 2004. La librería mapea internamente
+a las rutas CMI correctas:
 
 ```tsx
 // Works identically for 1.2 and 2004
@@ -294,7 +304,7 @@ Clases CSS reutilizables: `.section`, `.feature-block`, `.controls`, `.field`, `
 - Transpilación de TypeScript gestionada por Vite (esbuild) — sin emisión de `tsc`
 - Build de producción: `tsc -b` para verificación de tipos + `vite build` para el empaquetado
 
-### Language — TypeScript 5.9 (strict)
+### Lenguaje — TypeScript 5.9 (strict)
 
 Modo strict completo habilitado en `tsconfig.app.json`:
 

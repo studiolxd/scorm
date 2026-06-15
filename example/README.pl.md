@@ -1,12 +1,13 @@
 🌐 [English](README.md) · [Español](README.es.md) · [Français](README.fr.md) · [Português](README.pt.md) · [Deutsch](README.de.md) · [Polski](README.pl.md)
 
-# `@studiolxd/react-scorm` — Interaktywne demo
+# `@studiolxd/scorm` — Interaktywne demo
 
 Interaktywna, w pełni działająca aplikacja przykładowa demonstrująca każdą funkcję biblioteki
-[`@studiolxd/react-scorm`](https://www.npmjs.com/package/@studiolxd/react-scorm).
+[`@studiolxd/scorm`](https://www.npmjs.com/package/@studiolxd/scorm) — w tym
+rdzeń niezależny od frameworka (vanilla) oraz Web Component `<scorm-session>`.
 
-Zbudowana na bazie **React 19 + TypeScript + Vite**. Działa w całości w przeglądarce dzięki
-**trybowi mock** biblioteki — nie wymaga systemu LMS.
+Zbudowana na bazie **React 19 + TypeScript + Vite** (z użyciem adaptera `@studiolxd/scorm/react`). Działa
+w całości w przeglądarce dzięki **trybowi mock** biblioteki — nie wymaga systemu zarządzania nauczaniem (LMS).
 
 ---
 
@@ -27,19 +28,20 @@ Aplikacja posiada **przełącznik wersji SCORM** w nagłówku (1.2 / 2004). Zmia
 powoduje ponowne zamontowanie `ScormProvider` z nową wersją, resetując cały stan. Dzięki temu
 można porównać zachowanie obu standardów SCORM obok siebie.
 
-### 9 sekcji demonstracyjnych
+### 10 sekcji demonstracyjnych
 
 | Zakładka | Demonstrowane funkcje |
-|----------|-----------------------|
-| **Lifecycle** | `initialize()`, `commit()`, `terminate()`, live `ScormStatus`, `useScormAutoTerminate` |
+|-----|-----------------------|
+| **Lifecycle** | `initialize()`, `commit()`, `terminate()`, live `ScormStatus`, `useScormAutoTerminate`, `useScormAutoCommit` |
 | **Learner** | `getLearnerId()`, `getLearnerName()`, `getLaunchData()`, `getMode()`, `getCredit()`, `getEntry()`, `getMasteryScore()`, `getMaxTimeAllowed()`, `getTimeLimitAction()` |
 | **Status** | `setComplete()`, `setIncomplete()`, `setPassed()`, `setFailed()`, `getCompletionStatus()`, `getSuccessStatus()` |
 | **Score** | `setScore({ raw, min, max, scaled? })`, `getScore()`, `getPreferences()`, `setPreference()` |
 | **Location** | `setLocation()`, `getLocation()`, `setSuspendData()`, `getSuspendData()`, `setSessionTime()`, `getTotalTime()`, `setExit()` |
 | **Objectives** | `setObjective()`, `getObjective()`, `getObjectiveCount()` — formularz dostosowuje się do wersji 1.2/2004 |
-| **Interactions** | `recordInteraction()`, `getInteractionCount()` — quiz z 4 pytaniami i wizualną informacją zwrotną o poprawności |
-| **Comments** | `addLearnerComment()`, `getLearnerCommentCount()`, `getLmsCommentCount()` |
+| **Interactions** | `recordInteraction()`, `getInteractionCount()`, `getInteraction()` — quiz z 4 pytaniami na żywo z wizualną informacją zwrotną o poprawności |
+| **Comments** | `addLearnerComment()`, `getLearnerCommentCount()`, `getLmsCommentCount()`, `getLearnerComments()`, `getLmsComments()` |
 | **Advanced** | `getRaw()`, `setRaw()`, `setProgressMeasure()`, `setNavRequest()`, `getNavRequestValid()`, `formatScorm12Time()`, `formatScorm2004Time()` |
+| **Vanilla / WC** | `createScormSession()` (niezależny od frameworka) oraz Web Component `<scorm-session>`, na żywo w trybie mock |
 
 ---
 
@@ -64,7 +66,8 @@ są przechowywane w pamięci i tracone po odświeżeniu strony.
 
 ## Przegląd biblioteki
 
-`@studiolxd/react-scorm` to bezinterfejsowa biblioteka TypeScript/React do obsługi środowiska uruchomieniowego SCORM.
+`@studiolxd/scorm` to bezgłowa biblioteka TypeScript będąca środowiskiem uruchomieniowym SCORM: rdzeń niezależny od frameworka
+z adapterami dla React, Vue, Angular, Svelte oraz Web Components. To demo korzysta z adaptera React.
 
 ### Podstawowe koncepcje
 
@@ -148,7 +151,8 @@ if (r.ok) {
 
 **4. API niezależne od wersji**
 
-Te same nazwy metod działają zarówno dla SCORM 1.2, jak i 2004. Biblioteka wewnętrznie mapuje wywołania na właściwe ścieżki CMI:
+Te same nazwy metod działają zarówno dla SCORM 1.2, jak i 2004. Biblioteka wewnętrznie mapuje wywołania na właściwe
+ścieżki CMI:
 
 ```tsx
 // Works identically for 1.2 and 2004
@@ -305,7 +309,7 @@ Wielokrotnego użytku klasy CSS: `.section`, `.feature-block`, `.controls`, `.fi
 Pełny tryb strict włączony w `tsconfig.app.json`:
 
 | Opcja | Wartość | Efekt |
-|-------|---------|-------|
+|--------|-------|--------|
 | `strict` | `true` | Włącza wszystkie flagi ścisłego sprawdzania typów |
 | `noUnusedLocals` | `true` | Błąd przy nieużywanych zmiennych |
 | `noUnusedParameters` | `true` | Błąd przy nieużywanych parametrach funkcji |
@@ -320,7 +324,7 @@ Dwa cele tsconfig: `tsconfig.app.json` (src/, ES2022 + DOM) i `tsconfig.node.jso
 `eslint.config.js` używa formatu flat config z czterema zestawami reguł:
 
 | Plugin | Wersja | Dostarczane reguły |
-|--------|--------|--------------------|
+|--------|---------|----------------|
 | `@eslint/js` | 9.39 | Zalecane reguły JS ESLint |
 | `typescript-eslint` | 8.48 | Linting specyficzny dla TypeScript |
 | `eslint-plugin-react-hooks` | 7.0 | Exhaustive deps, rules of hooks |
@@ -331,7 +335,7 @@ Uruchom za pomocą `npm run lint`.
 ### Skrypty
 
 | Skrypt | Polecenie | Opis |
-|--------|-----------|------|
+|--------|---------|-------------|
 | `npm run dev` | `vite` | Uruchamia serwer deweloperski pod adresem `http://localhost:5173` |
 | `npm run build` | `tsc -b && vite build` | Sprawdzanie typów + bundle produkcyjny |
 | `npm run lint` | `eslint .` | Lintuje wszystkie pliki `.ts` / `.tsx` |
@@ -361,10 +365,10 @@ Kieruje tworzeniem wyróżniających się, produkcyjnych interfejsów frontend. 
 
 > Źródło: `vercel-labs/agent-skills`
 
-Wytyczne optymalizacji wydajności React utrzymywane przez Vercel Engineering. Zawiera **57 reguł w 8 kategoriach**, stosowanych przy pisaniu lub przeglądaniu komponentów React, pobierania danych, konfiguracji bundle lub kodu wrażliwego na wydajność:
+Wytyczne optymalizacji wydajności React utrzymywane przez Vercel Engineering. Zawiera **57 reguł w 8 kategoriach**, stosowanych przy pisaniu lub przeglądaniu komponentów React, pobierania danych, konfiguracji bundle lub dowolnego kodu wrażliwego na wydajność:
 
 | Kategoria | Reguły | Skupienie |
-|-----------|:------:|-----------|
+|----------|:-----:|-------|
 | `rerender` | 13 | Unikanie zbędnych ponownych renderowań (memo, stan pochodny, refs) |
 | `js` | 12 | Wydajność JavaScript (cache, wczesne wyjścia, wydajne struktury danych) |
 | `rendering` | 10 | Optymalizacja renderowania (renderowanie warunkowe, hydratacja, przejścia) |

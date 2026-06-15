@@ -1,47 +1,66 @@
 🌐 [English](README.md) · [Español](README.es.md) · [Français](README.fr.md) · [Português](README.pt.md) · [Deutsch](README.de.md) · [Polski](README.pl.md)
 
-# @studiolxd/react-scorm
+# @studiolxd/scorm
 
-Monorepo zawierające bibliotekę headless `@studiolxd/react-scorm` do obsługi środowiska uruchomieniowego SCORM oraz interaktywną aplikację demonstracyjną prezentującą wszystkie funkcje biblioteki.
+Monorepo dla `@studiolxd/scorm` — bezgłowego środowiska uruchomieniowego SCORM 1.2 / 2004 z **rdzeniem niezależnym od frameworka** oraz adapterami dla **React, Vue, Angular, Svelte, Web Components** i czystego JavaScriptu (vanilla) — wraz z interaktywną aplikacją demonstracyjną.
+
+> Wcześniej `@studiolxd/react-scorm`. API dla Reacta znajduje się teraz w podścieżce `@studiolxd/scorm/react`.
 
 ## Pakiety
 
-| Pakiet | Opis |
-|--------|------|
-| [`@studiolxd/react-scorm`](./packages/react-scorm/) | Biblioteka headless React + TypeScript — środowisko uruchomieniowe SCORM 1.2 / 2004 | [README](./packages/react-scorm/README.md) |
-| [`example`](./example/) | Interaktywna aplikacja demonstracyjna — prezentuje wszystkie funkcje biblioteki | [README](./example/README.md) |
+| Pakiet | Opis | Dokumentacja |
+|---------|-------------|------|
+| [`@studiolxd/scorm`](./packages/scorm/) | Bezgłowe środowisko uruchomieniowe SCORM 1.2 / 2004 — niezależny rdzeń + adaptery frameworków | [README](./packages/scorm/README.md) |
+| [`example`](./example/) | Interaktywna aplikacja demonstracyjna — prezentuje każdą funkcję biblioteki | [README](./example/README.md) |
 
 ## Pierwsze kroki
 
 ```bash
-npm install          # zainstaluj wszystkie workspaces z poziomu korzenia
-npm run dev:lib      # buduj bibliotekę w trybie watch
-npm run dev:example  # uruchom serwer deweloperski przykładu (http://localhost:5173)
+npm install          # install all workspaces from the root
+npm run dev:lib      # build the library in watch mode
+npm run dev:example  # start the example dev server (http://localhost:5173)
 ```
 
-Dodatkowe skrypty dostępne z poziomu korzenia:
+Dodatkowe skrypty dostępne z poziomu katalogu głównego:
 
 - `npm run build` — buduje bibliotekę
 - `npm run test` — uruchamia zestaw testów biblioteki
+
+## Punkty wejścia
+
+Biblioteka to pojedynczy pakiet z eksportami podścieżek — importuj tylko to, czego używasz:
+
+| Import | Do czego |
+|--------|-----|
+| `@studiolxd/scorm` | Niezależny od frameworka rdzeń + vanilla (`createScormSession`) |
+| `@studiolxd/scorm/react` | React (`ScormProvider`, `useScorm`, …) |
+| `@studiolxd/scorm/vue` | Vue 3.3+ (`useScorm`) |
+| `@studiolxd/scorm/angular` | Angular 17+ (`provideScorm`, `SCORM`) |
+| `@studiolxd/scorm/svelte` | Svelte 4+ (`createScormStore`) |
+| `@studiolxd/scorm/wc` | Web Component `<scorm-session>` |
+| `window.Scorm` (CDN `<script>`) | Czysty HTML, bez bundlera |
 
 ## Struktura projektu
 
 ```
 react-scorm/
-├── package.json          # korzeń npm workspaces (prywatny)
+├── package.json          # npm workspaces root (private)
 ├── packages/
-│   └── react-scorm/      # @studiolxd/react-scorm — publikowany na npm
-│       └── README.md     # pełna dokumentacja biblioteki
-└── example/              # interaktywna demonstracja (niepublikowana)
-    └── README.md         # dokumentacja demonstracji
+│   └── scorm/            # @studiolxd/scorm — published to npm
+│       └── README.md     # full library documentation
+├── example/              # interactive demo (not published)
+│   └── README.md         # demo documentation
+├── skills/               # AI agent skills (Claude Code, Cursor, …)
+├── tests/angular-smoke/  # Angular AOT smoke test fixture
+└── docs/                 # design & planning docs
 ```
 
-## Publikacja
+## Publikowanie
 
-Tylko `packages/react-scorm` jest publikowany na npm. Workspace `example` oraz korzeń są prywatne. Aby opublikować:
+Do npm publikowany jest wyłącznie `packages/scorm`. Workspace `example` oraz katalog główny są prywatne. Aby opublikować:
 
 ```bash
-cd packages/react-scorm
+cd packages/scorm
 npm publish
 ```
 

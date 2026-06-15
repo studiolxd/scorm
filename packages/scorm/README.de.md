@@ -1,17 +1,19 @@
 🌐 [English](README.md) · [Español](README.es.md) · [Français](README.fr.md) · [Português](README.pt.md) · [Deutsch](README.de.md) · [Polski](README.pl.md)
 
-# @studiolxd/react-scorm
+# @studiolxd/scorm
 
-Eine headless React + TypeScript-Bibliothek zur SCORM-Laufzeitintegration. Sie stellt einen `<ScormProvider>` und einen `useScorm()`-Hook bereit, um über SCORM 1.2 oder SCORM 2004 (4th Edition) mit einem LMS zu kommunizieren.
+Eine Headless-TypeScript-Bibliothek für die Integration der SCORM-Laufzeitumgebung. Ein **frameworkunabhängiger Kern** kommuniziert über SCORM 1.2 oder SCORM 2004 (4th Edition) mit einem LMS, ergänzt durch schlanke Adapter für **React, Vue, Angular, Svelte, Web Components** sowie reines Vanilla-JS / `<script>`.
+
+> Umbenannt von `@studiolxd/react-scorm`. Die React-API befindet sich jetzt im Unterpfad `@studiolxd/scorm/react`.
 
 **Hauptmerkmale:**
-- Vollständige Abdeckung von SCORM 1.2 und 2004
-- Headless (keine Benutzeroberfläche) — du baust das Interface selbst
+- Vollständige Abdeckung der Standards SCORM 1.2 und 2004
+- Frameworkunabhängiger Kern + Adapter für React / Vue / Angular / Svelte / Web Components
+- Headless (keine UI) — du baust die Oberfläche
 - Strenge TypeScript-Typen für alle CMI-Pfade und APIs
 - Result-basierte Fehlerbehandlung (keine impliziten Ausnahmen)
-- Kein automatischer Zustand, keine Persistenz, kein Auto-Save
-- In-Memory-mock-Modus für die lokale Entwicklung
-- Optionales Lifecycle-Management mit `useScormAutoTerminate`
+- In-Memory-Mock-Modus für die lokale Entwicklung (kein LMS erforderlich)
+- Optionale Lifecycle-Helfer (`autoTerminate`, `autoCommit`)
 
 ## Installation
 
@@ -19,9 +21,34 @@ Eine headless React + TypeScript-Bibliothek zur SCORM-Laufzeitintegration. Sie s
 npm install @studiolxd/scorm
 ```
 
-React 18+ ist als Peer-Dependency erforderlich.
+Framework-Pakete (React, Vue usw.) sind **optionale** Peer-Dependencies — installiere nur das, das du verwendest.
 
-## Schnellstart
+## Einstiegspunkte
+
+| Import | Für |
+|--------|-----|
+| `@studiolxd/scorm` | Frameworkunabhängiger Kern + Vanilla (`createScormSession`) |
+| `@studiolxd/scorm/react` | React: `ScormProvider`, `useScorm`, … (React 18+) |
+| `@studiolxd/scorm/vue` | Vue 3.3+: `useScorm()`-Composable |
+| `@studiolxd/scorm/angular` | Angular 17+: `provideScorm()` + `SCORM`-Token |
+| `@studiolxd/scorm/svelte` | Svelte 4+: `createScormStore()` |
+| `@studiolxd/scorm/wc` | `<scorm-session>` Web Component |
+| `window.Scorm` (CDN `<script>`) | Reines HTML, kein Bundler |
+
+## Schnellstart — Vanilla
+
+```ts
+import { createScormSession } from '@studiolxd/scorm';
+
+const session = createScormSession('auto', { noLmsBehavior: 'mock' });
+session.initialize();
+session.api?.setScore({ raw: 95, min: 0, max: 100 });
+session.api?.setComplete();
+session.commit();
+session.terminate();
+```
+
+## Schnellstart — React
 
 ```tsx
 import { ScormProvider, useScorm } from '@studiolxd/scorm/react';
@@ -60,6 +87,56 @@ function CourseContent() {
 }
 ```
 
+## Andere Frameworks
+
+Alle Adapter umschließen dieselbe beobachtbare Session (`createScormSession`). Installiere nur das
+Paket, das du verwendest, als Peer-Dependency.
+
+**Vue 3**
+```ts
+import { useScorm } from '@studiolxd/scorm/vue';
+const { status, initialize, session } = useScorm('auto', { noLmsBehavior: 'mock' });
+// status is a reactive ref → status.value.initialized
+```
+
+**Angular 17+**
+```ts
+import { provideScorm, SCORM } from '@studiolxd/scorm/angular';
+bootstrapApplication(App, { providers: [provideScorm('auto', { noLmsBehavior: 'mock' })] });
+// in a component: const { session, status } = inject(SCORM);  // status() is a signal
+```
+
+**Svelte 4+**
+```svelte
+<script>
+  import { createScormStore } from '@studiolxd/scorm/svelte';
+  import { onDestroy } from 'svelte';
+  const scorm = createScormStore('auto', { noLmsBehavior: 'mock' });
+  const { status } = scorm;
+  onDestroy(scorm.destroy);
+</script>
+{#if $status.initialized}live{/if}
+```
+
+**Web Component / reines HTML**
+```html
+<script type="module">import '@studiolxd/scorm/wc';</script>
+<scorm-session version="auto" no-lms-behavior="mock" auto-terminate></scorm-session>
+<script>
+  document.querySelector('scorm-session')
+    .addEventListener('change', (e) => console.log(e.detail.status));
+</script>
+```
+
+**CDN `<script>` (kein Bundler)** — stellt `window.Scorm` bereit:
+```html
+<script src="https://unpkg.com/@studiolxd/scorm/dist/scorm.global.js"></script>
+<script>
+  const session = Scorm.createScormSession('auto', { noLmsBehavior: 'mock' });
+  session.initialize();
+</script>
+```
+
 ## ScormProvider
 
 Die `<ScormProvider>`-Komponente sucht die LMS-API und stellt sie über den Kontext bereit. Sie initialisiert **nicht** automatisch — du musst `api.initialize()` explizit aufrufen.
@@ -81,9 +158,9 @@ Die `<ScormProvider>`-Komponente sucht die LMS-API und stellt sie über den Kont
 ### `noLmsBehavior`-Optionen
 
 | Wert | Verhalten |
-|------|-----------|
+|-------|----------|
 | `"error"` (Standard) | `api` ist `null`, `status.apiFound` ist `false`. Operationen können nicht aufgerufen werden. |
-| `"mock"` | Verwendet eine In-Memory-mock-SCORM-API. Ideal für lokale Entwicklung und Tests. |
+| `"mock"` | Verwendet eine In-Memory-Mock-SCORM-API. Ideal für lokale Entwicklung und Tests. |
 | `"throw"` | Wirft einen `ScormError` beim Rendern. Mit einer React **Error Boundary** umschließen. |
 
 > **`"throw"`-Modus** wirft synchron innerhalb von `useMemo`. Ohne eine Error Boundary propagiert der Fehler nach oben und bringt den gesamten Teilbaum zum Absturz. Umschließe `<ScormProvider>` bei Verwendung dieses Modus immer mit einer Error Boundary.
@@ -95,12 +172,12 @@ const { status, api, raw } = useScorm();
 ```
 
 | Feld | Typ | Beschreibung |
-|------|-----|--------------|
+|-------|------|-------------|
 | `status` | `ScormStatus` | Verbindungsstatus: `apiFound`, `initialized`*, `terminated`*, `version`, `noLmsBehavior` |
 | `api` | `IScormApi \| null` | Versionsneutrale High-Level-API. `null`, wenn bei `"error"`-Verhalten keine API gefunden wurde. |
-| `raw` | `IScormDriver \| null` | Low-Level-driver für direkte API-Aufrufe (Notausstieg). |
+| `raw` | `IScormDriver \| null` | Low-Level-Treiber für direkte API-Aufrufe (Notausstieg). |
 
-> **Hinweis:** `status.initialized` und `status.terminated` sind im Kontextwert immer `false` — der provider verfolgt den Laufzeitzustand nicht. Wenn du reaktiven initialisierten/terminierten Zustand benötigst, verwalte ihn selbst mit `useState` nach dem Aufruf von `api.initialize()` und `api.terminate()`.
+> **Hinweis:** Der `status` aus `useScorm()` ist ein zur Renderzeit gelesener Schnappschuss. Für **reaktiven** `initialized`/`terminated`-Zustand (und umschlossene `initialize`/`terminate`/`commit`) verwende **`useScormSession()`**, das die zugrunde liegende Session über `useSyncExternalStore` abonniert.
 
 ## High-Level-API
 
@@ -268,11 +345,11 @@ if (result.ok) {
 
 Hilfsfunktionen: `isOk()`, `isErr()`, `unwrap()`, `unwrapOr()`.
 
-> **Sicherheit:** `errorString` und `diagnostic` sind Zeichenketten, die direkt vom LMS stammen. Rendere sie niemals über `innerHTML` oder eine nicht-bereinigte DOM-API — behandle sie als nicht vertrauenswürdige Eingaben und escape HTML vor jeder DOM-Einfügung.
+> **Sicherheit:** `errorString` und `diagnostic` sind Zeichenketten, die direkt vom LMS stammen. Rendere sie niemals über `innerHTML` oder eine nicht bereinigte DOM-API — behandle sie als nicht vertrauenswürdige Eingaben und escape HTML vor jeder DOM-Einfügung.
 
 ## useScormSession (reaktiver Zustand, opt-in)
 
-`useScorm()` hält `status.initialized` bewusst als statischen Schnappschuss — der provider verfolgt den Lifecycle-Zustand nicht. Wenn du `initialized` und `terminated` als reaktiven React-Zustand benötigst (um Re-Renders auszulösen), verwende stattdessen `useScormSession()`.
+`useScorm()` hält `status.initialized` bewusst als statischen Schnappschuss — der Provider verfolgt den Lifecycle-Zustand nicht. Wenn du `initialized` und `terminated` als reaktiven React-Zustand benötigst (um Re-Renders auszulösen), verwende stattdessen `useScormSession()`.
 
 ```tsx
 import { useScormSession } from '@studiolxd/scorm/react';
@@ -290,7 +367,7 @@ function Course() {
 `useScormSession()` ist eine Obermenge von `useScorm()` — es gibt alles zurück, was `useScorm()` zurückgibt (`api`, `status`, `raw`), plus:
 
 | Feld | Typ | Beschreibung |
-|------|-----|--------------|
+|-------|------|-------------|
 | `initialized` | `boolean` | `true` nach erfolgreichem `initialize()`-Aufruf. Reaktiv. |
 | `terminated` | `boolean` | `true` nach erfolgreichem `terminate()`-Aufruf. Reaktiv. |
 | `initialize()` | `Result<true, ScormError> \| undefined` | Ruft `api.initialize()` auf und aktualisiert den Zustand. `undefined` wenn keine API vorhanden. |
@@ -339,7 +416,7 @@ formatScorm2004Time(90000) // "PT1M30S"
 
 ## Tests
 
-Verwende `noLmsBehavior: 'mock'` für Tests. Der mock nutzt einen In-Memory-Speicher mit echtem driver-Verhalten.
+Verwende `noLmsBehavior: 'mock'` für Tests. Der Mock nutzt einen In-Memory-Speicher mit echtem Treiber-Verhalten.
 
 ```tsx
 // In tests
@@ -348,7 +425,7 @@ Verwende `noLmsBehavior: 'mock'` für Tests. Der mock nutzt einen In-Memory-Spei
 </ScormProvider>
 ```
 
-Du kannst die mock-Klassen auch direkt verwenden:
+Du kannst die Mock-Klassen auch direkt verwenden:
 
 ```ts
 import { MockScorm12Api, Scorm12Driver, ScormApi, createLogger } from '@studiolxd/scorm/react';
@@ -375,7 +452,7 @@ const path: Scorm12CmiPath = 'cmi.core.lesson_status';  // OK
 ## Weitere Dokumentation
 
 - [SCORM 1.2 vs 2004 Mapping-Tabelle](./docs/scorm-mapping-table.md)
-- [Testen mit dem mock-Modus](./docs/mock-mode.md)
+- [Testen mit dem Mock-Modus](./docs/mock-mode.md)
 - [Integrationsleitfaden](./docs/integration-guide.md)
 
 ## Lizenz
