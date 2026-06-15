@@ -109,8 +109,9 @@ export function ObjectivesSection() {
         {/* Common fields */}
         <div className="controls">
           <div className="field">
-            <label className="field-label">Index</label>
+            <label className="field-label" htmlFor="obj-index">Index</label>
             <input
+              id="obj-index"
               className="field-input"
               type="number"
               min="0"
@@ -119,8 +120,9 @@ export function ObjectivesSection() {
             />
           </div>
           <div className="field">
-            <label className="field-label">ID</label>
+            <label className="field-label" htmlFor="obj-id">ID</label>
             <input
+              id="obj-id"
               className="field-input"
               value={objId}
               onChange={(e) => setObjId(e.target.value)}
@@ -132,10 +134,11 @@ export function ObjectivesSection() {
         <div className="controls">
           {status.version === '1.2' ? (
             <div className="field">
-              <label className="field-label">
+              <label className="field-label" htmlFor="obj-status">
                 Status <span className="badge badge-12">1.2</span>
               </label>
               <select
+                id="obj-status"
                 className="field-input"
                 value={objStatus}
                 onChange={(e) => setObjStatus(e.target.value)}
@@ -151,10 +154,11 @@ export function ObjectivesSection() {
           ) : (
             <>
               <div className="field">
-                <label className="field-label">
+                <label className="field-label" htmlFor="obj-success">
                   Success Status <span className="badge badge-2004">2004</span>
                 </label>
                 <select
+                  id="obj-success"
                   className="field-input"
                   value={successStatus}
                   onChange={(e) => setSuccessStatus(e.target.value)}
@@ -165,10 +169,11 @@ export function ObjectivesSection() {
                 </select>
               </div>
               <div className="field">
-                <label className="field-label">
+                <label className="field-label" htmlFor="obj-completion">
                   Completion Status <span className="badge badge-2004">2004</span>
                 </label>
                 <select
+                  id="obj-completion"
                   className="field-input"
                   value={completionStatus}
                   onChange={(e) => setCompletionStatus(e.target.value)}
@@ -186,8 +191,9 @@ export function ObjectivesSection() {
         {/* Score fields */}
         <div className="controls">
           <div className="field">
-            <label className="field-label">Score Raw</label>
+            <label className="field-label" htmlFor="obj-score-raw">Score Raw</label>
             <input
+              id="obj-score-raw"
               className="field-input"
               type="number"
               value={scoreRaw}
@@ -195,8 +201,9 @@ export function ObjectivesSection() {
             />
           </div>
           <div className="field">
-            <label className="field-label">Min</label>
+            <label className="field-label" htmlFor="obj-score-min">Min</label>
             <input
+              id="obj-score-min"
               className="field-input"
               type="number"
               value={scoreMin}
@@ -204,8 +211,9 @@ export function ObjectivesSection() {
             />
           </div>
           <div className="field">
-            <label className="field-label">Max</label>
+            <label className="field-label" htmlFor="obj-score-max">Max</label>
             <input
+              id="obj-score-max"
               className="field-input"
               type="number"
               value={scoreMax}
@@ -214,10 +222,11 @@ export function ObjectivesSection() {
           </div>
           {status.version === '2004' && (
             <div className="field">
-              <label className="field-label">
+              <label className="field-label" htmlFor="obj-score-scaled">
                 Scaled <span className="badge badge-2004">2004</span>
               </label>
               <input
+                id="obj-score-scaled"
                 className="field-input"
                 type="number"
                 step="0.01"
@@ -234,10 +243,11 @@ export function ObjectivesSection() {
         {status.version === '2004' && (
           <div className="controls">
             <div className="field" style={{ flexGrow: 1 }}>
-              <label className="field-label">
+              <label className="field-label" htmlFor="obj-description">
                 Description <span className="badge badge-2004">2004</span>
               </label>
               <input
+                id="obj-description"
                 className="field-input"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}

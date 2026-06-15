@@ -54,7 +54,7 @@ function ScormDemoShell({ activeTab, onTabChange }: ScormDemoShellProps) {
         ))}
       </nav>
 
-      <main className="tab-content" id="tab-panel">
+      <main className="tab-content" id="tab-panel" aria-label="Active section content">
         {activeTab === 'lifecycle' && <LifecycleSection />}
         {activeTab === 'learner' && <LearnerSection />}
         {activeTab === 'status' && <StatusSection />}
