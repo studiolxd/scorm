@@ -1,6 +1,6 @@
 {
   "name": "@studiolxd/react-scorm",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Headless React + TypeScript SCORM 1.2/2004 runtime integration library",
   "type": "module",
   "main": "./dist/index.cjs",

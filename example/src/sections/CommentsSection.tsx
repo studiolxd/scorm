@@ -5,6 +5,7 @@
  *   api.addLearnerComment(text, location?, timestamp?) — add a learner comment
  *   api.getLearnerCommentCount()                       — count learner comments
  *   api.getLmsCommentCount()                           — count LMS comments
+ *   api.getLearnerComments() / api.getLmsComments()    — read comment text back
  *
  * SCORM version differences:
  *   SCORM 1.2: comments are a single concatenated string (cmi.comments). New comments
@@ -67,6 +68,25 @@ export function CommentsSection() {
     setResultOk(learner.ok && lms.ok);
   };
 
+  const handleReadComments = () => {
+    if (!guard()) return;
+    const learner = api!.getLearnerComments();
+    const lines: string[] = [];
+    if (learner.ok) {
+      lines.push(`getLearnerComments() → ${learner.value.length} entr${learner.value.length === 1 ? 'y' : 'ies'}`);
+      learner.value.forEach((c, i) => {
+        const meta = c.location || c.timestamp
+          ? ` (${[c.location, c.timestamp].filter(Boolean).join(' · ')})`
+          : '';
+        lines.push(`  ${i + 1}. "${c.comment}"${meta}`);
+      });
+    } else {
+      lines.push(`✗ getLearnerComments() → ${learner.error.message}`);
+    }
+    setResult(lines.join('\n'));
+    setResultOk(learner.ok);
+  };
+
   return (
     <div className="section">
       <div className="section-header">
@@ -85,8 +105,9 @@ export function CommentsSection() {
         </div>
         <div className="controls">
           <div className="field" style={{ flexGrow: 1 }}>
-            <label className="field-label">Comment text</label>
+            <label className="field-label" htmlFor="comment-text">Comment text</label>
             <input
+              id="comment-text"
               className="field-input"
               value={comment}
               onChange={(e) => setComment(e.target.value)}
@@ -94,11 +115,12 @@ export function CommentsSection() {
             />
           </div>
           <div className="field">
-            <label className="field-label">
+            <label className="field-label" htmlFor="comment-location">
               Location{' '}
               <span className="badge badge-2004">2004</span>
             </label>
             <input
+              id="comment-location"
               className="field-input"
               value={commentLocation}
               onChange={(e) => setCommentLocation(e.target.value)}
@@ -113,6 +135,9 @@ export function CommentsSection() {
           <button className="btn" onClick={handleCounts}>
             Get counts
           </button>
+          <button className="btn" onClick={handleReadComments}>
+            Read comments back
+          </button>
         </div>
 
         {result && <pre className={`result ${resultOk ? 'ok' : 'error'}`}>{result}</pre>}
@@ -123,7 +148,7 @@ export function CommentsSection() {
               Comments added this session
             </div>
             {log.map((entry, i) => (
-              <div key={i} className="result info" style={{ marginBottom: 4 }}>
+              <div key={`${i}-${entry.text}`} className="result info" style={{ marginBottom: 4 }}>
                 {entry.text}
               </div>
             ))}

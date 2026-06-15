@@ -69,8 +69,9 @@ export function AdvancedSection() {
         </p>
         <div className="controls">
           <div className="field" style={{ flexGrow: 1 }}>
-            <label className="field-label">CMI path</label>
+            <label className="field-label" htmlFor="raw-path">CMI path</label>
             <input
+              id="raw-path"
               className="field-input"
               value={rawPath}
               onChange={(e) => setRawPath(e.target.value)}
@@ -79,8 +80,9 @@ export function AdvancedSection() {
             />
           </div>
           <div className="field" style={{ flexGrow: 1 }}>
-            <label className="field-label">Value (for setRaw)</label>
+            <label className="field-label" htmlFor="raw-value">Value (for setRaw)</label>
             <input
+              id="raw-value"
               className="field-input"
               value={rawValue}
               onChange={(e) => setRawValue(e.target.value)}
@@ -162,8 +164,9 @@ export function AdvancedSection() {
         </p>
         <div className="controls">
           <div className="field">
-            <label className="field-label">Progress: {progress.toFixed(2)}</label>
+            <label className="field-label" htmlFor="progress-range">Progress: {progress.toFixed(2)}</label>
             <input
+              id="progress-range"
               className="field-input"
               type="range"
               min="0"
@@ -171,6 +174,7 @@ export function AdvancedSection() {
               step="0.01"
               value={progress}
               onChange={(e) => setProgress(Number(e.target.value))}
+              aria-valuetext={progress.toFixed(2)}
             />
           </div>
           <button
@@ -212,8 +216,9 @@ export function AdvancedSection() {
         </p>
         <div className="controls">
           <div className="field">
-            <label className="field-label">Nav request</label>
+            <label className="field-label" htmlFor="nav-request">Nav request</label>
             <select
+              id="nav-request"
               className="field-input"
               value={navRequest}
               onChange={(e) => setNavRequest(e.target.value)}
@@ -275,8 +280,9 @@ export function AdvancedSection() {
         </p>
         <div className="controls">
           <div className="field">
-            <label className="field-label">Milliseconds</label>
+            <label className="field-label" htmlFor="time-ms">Milliseconds</label>
             <input
+              id="time-ms"
               className="field-input"
               type="number"
               min="0"

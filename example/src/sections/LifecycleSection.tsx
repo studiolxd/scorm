@@ -11,13 +11,21 @@
  */
 import { useSessionContext } from '../SessionContext';
 import { useState } from 'react';
+import { useScormAutoCommit } from '@studiolxd/react-scorm';
 import type { Result, ScormError } from '@studiolxd/react-scorm';
 
 type BoolResult = Result<true, ScormError> | undefined;
 
+const AUTO_COMMIT_INTERVAL_MS = 10_000;
+
 export function LifecycleSection() {
   const { status, initialized, terminated, initialize, terminate, commit } = useSessionContext();
   const [log, setLog] = useState<string[]>([]);
+  const [autoCommit, setAutoCommit] = useState(false);
+
+  // Periodically flushes data to the LMS while enabled. Passing 0 disables it —
+  // the hook is always called (Rules of Hooks), the interval just toggles.
+  useScormAutoCommit(autoCommit ? AUTO_COMMIT_INTERVAL_MS : 0);
 
   const addLog = (line: string) => setLog((prev) => [...prev, line]);
 
@@ -112,7 +120,7 @@ export function LifecycleSection() {
         {log.length > 0 && (
           <div className={`result ${log[log.length - 1].startsWith('✓') ? 'ok' : 'error'}`}>
             {log.map((line, i) => (
-              <div key={i}>{line}</div>
+              <div key={`${i}-${line}`}>{line}</div>
             ))}
           </div>
         )}
@@ -135,6 +143,44 @@ function Lesson() {
       Start lesson
     </button>
   );
+}`}</pre>
+        </details>
+      </div>
+
+      {/* ── Auto-commit hook ─────────────────────────────── */}
+      <div className="feature-block">
+        <div className="feature-block-title">
+          useScormAutoCommit{' '}
+          <span className="badge badge-both">opt-in hook</span>
+        </div>
+        <p className="section-description">
+          Flushes data to the LMS on a fixed interval so long sessions don't lose progress
+          if the tab is closed abruptly. Complements (not replaces) the commit performed by{' '}
+          <code>useScormAutoTerminate</code> on unload.
+        </p>
+        <div className="controls">
+          <button
+            className={`btn ${autoCommit ? 'btn-danger' : 'btn-primary'}`}
+            onClick={() => setAutoCommit((v) => !v)}
+          >
+            {autoCommit
+              ? `Disable auto-commit (every ${AUTO_COMMIT_INTERVAL_MS / 1000}s)`
+              : `Enable auto-commit (every ${AUTO_COMMIT_INTERVAL_MS / 1000}s)`}
+          </button>
+          <span className="status-item-value" style={{ alignSelf: 'center' }}>
+            {autoCommit ? '● committing' : '○ idle'}
+          </span>
+        </div>
+
+        <details className="code-details" style={{ marginTop: 14 }}>
+          <summary>Code example</summary>
+          <pre>{`import { useScormAutoCommit } from '@studiolxd/react-scorm';
+
+function CourseContent() {
+  // Flush every 30 seconds. Pass 0 to disable.
+  useScormAutoCommit(30_000);
+
+  return <LessonContent />;
 }`}</pre>
         </details>
       </div>

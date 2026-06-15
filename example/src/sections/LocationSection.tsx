@@ -64,8 +64,9 @@ export function LocationSection() {
         </div>
         <div className="controls">
           <div className="field">
-            <label className="field-label">Location string</label>
+            <label className="field-label" htmlFor="location-string">Location string</label>
             <input
+              id="location-string"
               className="field-input"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
@@ -99,8 +100,9 @@ export function LocationSection() {
         </p>
         <div className="controls">
           <div className="field" style={{ flexGrow: 1 }}>
-            <label className="field-label">Data (any string / JSON)</label>
+            <label className="field-label" htmlFor="suspend-data">Data (any string / JSON)</label>
             <input
+              id="suspend-data"
               className="field-input"
               value={suspendData}
               onChange={(e) => setSuspendData(e.target.value)}
@@ -146,8 +148,9 @@ api.commit(); // flush to LMS`}</pre>
         </div>
         <div className="controls">
           <div className="field">
-            <label className="field-label">Session time (ms)</label>
+            <label className="field-label" htmlFor="session-ms">Session time (ms)</label>
             <input
+              id="session-ms"
               className="field-input"
               type="number"
               value={sessionMs}
@@ -171,8 +174,9 @@ api.commit(); // flush to LMS`}</pre>
         </div>
         <div className="controls">
           <div className="field">
-            <label className="field-label">Exit value</label>
+            <label className="field-label" htmlFor="exit-value">Exit value</label>
             <select
+              id="exit-value"
               className="field-input"
               value={exitValue}
               onChange={(e) => setExitValue(e.target.value)}

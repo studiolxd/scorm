@@ -1,4 +1,4 @@
-import type { IScormApi, InteractionRecord, ObjectiveRecord, ScoreData } from '../types/api';
+import type { IScormApi, InteractionRecord, InteractionType, ObjectiveRecord, ScoreData, CommentRecord } from '../types/api';
 import type { IScormDriver } from '../types/driver';
 import type { ScormVersion } from '../types/common';
 import { ok, err, type Result } from '../result/result';
@@ -150,6 +150,40 @@ export class ScormApi implements IScormApi {
    * If the LMS rejects a field for its own reasons after writes have already started,
    * earlier fields remain committed — SCORM has no rollback mechanism.
    */
+  /**
+   * Validate a raw/min/max score field. Returns a ScormError if invalid, else null.
+   * In SCORM 1.2 these are constrained to 0–100 (CMIDecimal); SCORM 2004 only
+   * requires a finite number.
+   */
+  private validateScoreField(field: 'raw' | 'min' | 'max', value: number): ScormError | null {
+    const prefix = this.version === '1.2' ? 'cmi.core.score' : 'cmi.score';
+    if (!isFinite(value)) {
+      return new ScormError({
+        version: this.version,
+        operation: 'setScore',
+        path: `${prefix}.${field}`,
+        code: 405,
+        errorString: 'Incorrect Data Type',
+        diagnostic: `score.${field} must be a finite number, got: ${value}`,
+        apiFound: true,
+        initialized: true,
+      });
+    }
+    if (this.version === '1.2' && (value < 0 || value > 100)) {
+      return new ScormError({
+        version: '1.2',
+        operation: 'setScore',
+        path: `${prefix}.${field}`,
+        code: 405,
+        errorString: 'Incorrect Data Type',
+        diagnostic: `SCORM 1.2 score.${field} must be between 0 and 100, got: ${value}`,
+        apiFound: true,
+        initialized: true,
+      });
+    }
+    return null;
+  }
+
   setScore(data: ScoreData): Result<true, ScormError> {
     const prefix = this.version === '1.2' ? 'cmi.core.score' : 'cmi.score';
 
@@ -159,51 +193,14 @@ export class ScormApi implements IScormApi {
     // where each data-model element is set independently.
     const results: Result<string, ScormError>[] = [];
 
-    if (data.raw !== undefined) {
-      if (!isFinite(data.raw)) {
-        return err(new ScormError({
-          version: this.version,
-          operation: 'setScore',
-          path: `${prefix}.raw`,
-          code: 405,
-          errorString: 'Incorrect Data Type',
-          diagnostic: `score.raw must be a finite number, got: ${data.raw}`,
-          apiFound: true,
-          initialized: true,
-        }));
-      }
-      results.push(this.driver.setValue(`${prefix}.raw`, String(data.raw)));
+    for (const field of ['raw', 'min', 'max'] as const) {
+      const value = data[field];
+      if (value === undefined) continue;
+      const invalid = this.validateScoreField(field, value);
+      if (invalid) return err(invalid);
+      results.push(this.driver.setValue(`${prefix}.${field}`, String(value)));
     }
-    if (data.min !== undefined) {
-      if (!isFinite(data.min)) {
-        return err(new ScormError({
-          version: this.version,
-          operation: 'setScore',
-          path: `${prefix}.min`,
-          code: 405,
-          errorString: 'Incorrect Data Type',
-          diagnostic: `score.min must be a finite number, got: ${data.min}`,
-          apiFound: true,
-          initialized: true,
-        }));
-      }
-      results.push(this.driver.setValue(`${prefix}.min`, String(data.min)));
-    }
-    if (data.max !== undefined) {
-      if (!isFinite(data.max)) {
-        return err(new ScormError({
-          version: this.version,
-          operation: 'setScore',
-          path: `${prefix}.max`,
-          code: 405,
-          errorString: 'Incorrect Data Type',
-          diagnostic: `score.max must be a finite number, got: ${data.max}`,
-          apiFound: true,
-          initialized: true,
-        }));
-      }
-      results.push(this.driver.setValue(`${prefix}.max`, String(data.max)));
-    }
+
     if (data.scaled !== undefined && this.version === '2004') {
       if (!isFinite(data.scaled) || data.scaled < -1 || data.scaled > 1) {
         return err(new ScormError({
@@ -478,6 +475,82 @@ export class ScormApi implements IScormApi {
     return ok(true);
   }
 
+  /**
+   * Read back a recorded interaction by index.
+   *
+   * SCORM 2004 only. In SCORM 1.2 the `cmi.interactions.n.*` elements are write-only
+   * per the spec, so this returns a ScormError (code 404) without touching the LMS.
+   */
+  getInteraction(index: number): Result<InteractionRecord, ScormError> {
+    if (this.version === '1.2') {
+      return err(new ScormError({
+        version: '1.2',
+        operation: 'getInteraction',
+        path: `cmi.interactions.${index}`,
+        code: 404,
+        errorString: 'Element Is Write Only',
+        diagnostic: 'SCORM 1.2 interactions are write-only and cannot be read back',
+        apiFound: true,
+        initialized: true,
+      }));
+    }
+
+    const base = `cmi.interactions.${index}`;
+
+    const idResult = this.driver.getValue(`${base}.id`);
+    if (!idResult.ok) return err(idResult.error);
+
+    const typeResult = this.driver.getValue(`${base}.type`);
+    if (!typeResult.ok) return err(typeResult.error);
+
+    const record: InteractionRecord = {
+      id: idResult.value,
+      type: (typeResult.value || 'other') as InteractionType,
+    };
+
+    const timestamp = this.driver.getValue(`${base}.timestamp`);
+    if (timestamp.ok && timestamp.value !== '') record.timestamp = timestamp.value;
+
+    const weighting = this.driver.getValue(`${base}.weighting`);
+    if (weighting.ok && weighting.value !== '') record.weighting = parseFloat(weighting.value);
+
+    const learnerResponse = this.driver.getValue(`${base}.learner_response`);
+    if (learnerResponse.ok && learnerResponse.value !== '') record.learnerResponse = learnerResponse.value;
+
+    const result = this.driver.getValue(`${base}.result`);
+    if (result.ok && result.value !== '') record.result = result.value;
+
+    const latency = this.driver.getValue(`${base}.latency`);
+    if (latency.ok && latency.value !== '') record.latency = latency.value;
+
+    const description = this.driver.getValue(`${base}.description`);
+    if (description.ok && description.value !== '') record.description = description.value;
+
+    const crCount = this.driver.getValue(`${base}.correct_responses._count`);
+    if (crCount.ok && crCount.value !== '') {
+      const count = parseInt(crCount.value, 10) || 0;
+      const patterns: string[] = [];
+      for (let i = 0; i < count; i++) {
+        const pattern = this.driver.getValue(`${base}.correct_responses.${i}.pattern`);
+        if (pattern.ok) patterns.push(pattern.value);
+      }
+      if (patterns.length > 0) record.correctResponses = patterns;
+    }
+
+    const objCount = this.driver.getValue(`${base}.objectives._count`);
+    if (objCount.ok && objCount.value !== '') {
+      const count = parseInt(objCount.value, 10) || 0;
+      const ids: string[] = [];
+      for (let i = 0; i < count; i++) {
+        const objId = this.driver.getValue(`${base}.objectives.${i}.id`);
+        if (objId.ok) ids.push(objId.value);
+      }
+      if (ids.length > 0) record.objectiveIds = ids;
+    }
+
+    return ok(record);
+  }
+
   // --- Comments ---
 
   addLearnerComment(comment: string, location?: string, timestamp?: string): Result<true, ScormError> {
@@ -539,6 +612,61 @@ export class ScormApi implements IScormApi {
     const result = this.driver.getValue('cmi.comments_from_lms._count');
     if (!result.ok) return err(result.error);
     return ok(parseInt(result.value, 10) || 0);
+  }
+
+  /**
+   * Read learner-authored comments, including their text.
+   *
+   * SCORM 1.2 stores learner comments as a single freeform string (`cmi.comments`);
+   * it is returned as one entry (empty array if blank). SCORM 2004 returns each
+   * indexed `comments_from_learner` entry with its location and timestamp.
+   */
+  getLearnerComments(): Result<CommentRecord[], ScormError> {
+    if (this.version === '1.2') {
+      const result = this.driver.getValue('cmi.comments');
+      if (!result.ok) return err(result.error);
+      return ok(result.value ? [{ comment: result.value }] : []);
+    }
+    return this.readIndexedComments('cmi.comments_from_learner');
+  }
+
+  /**
+   * Read LMS-authored comments, including their text.
+   *
+   * SCORM 1.2 exposes a single read-only string (`cmi.comments_from_lms`); it is
+   * returned as one entry (empty array if blank). SCORM 2004 returns each indexed
+   * `comments_from_lms` entry with its location and timestamp.
+   */
+  getLmsComments(): Result<CommentRecord[], ScormError> {
+    if (this.version === '1.2') {
+      const result = this.driver.getValue('cmi.comments_from_lms');
+      if (!result.ok) return err(result.error);
+      return ok(result.value ? [{ comment: result.value }] : []);
+    }
+    return this.readIndexedComments('cmi.comments_from_lms');
+  }
+
+  /** Read an indexed SCORM 2004 comment collection (learner or LMS) into records. */
+  private readIndexedComments(prefix: string): Result<CommentRecord[], ScormError> {
+    const countResult = this.driver.getValue(`${prefix}._count`);
+    if (!countResult.ok) return err(countResult.error);
+    const count = parseInt(countResult.value, 10) || 0;
+
+    const records: CommentRecord[] = [];
+    for (let i = 0; i < count; i++) {
+      const base = `${prefix}.${i}`;
+      const commentResult = this.driver.getValue(`${base}.comment`);
+      if (!commentResult.ok) return err(commentResult.error);
+
+      const record: CommentRecord = { comment: commentResult.value };
+      const location = this.driver.getValue(`${base}.location`);
+      if (location.ok && location.value !== '') record.location = location.value;
+      const timestamp = this.driver.getValue(`${base}.timestamp`);
+      if (timestamp.ok && timestamp.value !== '') record.timestamp = timestamp.value;
+
+      records.push(record);
+    }
+    return ok(records);
   }
 
   // --- Preferences ---

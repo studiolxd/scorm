@@ -26,9 +26,23 @@ export interface InteractionRecord {
   type: InteractionType;
   /** Human-readable description (2004 only). */
   description?: string;
-  /** The learner's response. */
+  /**
+   * The learner's response, encoded per the interaction's `type`. The library passes
+   * this string through verbatim — it does not validate or transform it — so it must
+   * already match the SCORM format for that type. Common formats:
+   * - `true-false`: `"true"` | `"false"` (2004) / `"0"` | `"1"` (1.2)
+   * - `choice` / `sequencing`: identifiers joined with `[,]`, e.g. `"a[,]c"`
+   * - `matching`: source/target pairs, e.g. `"1[.]a[,]2[.]b"`
+   * - `fill-in` / `long-fill-in`: the literal text the learner typed
+   * - `numeric`: a number as a string, e.g. `"42"`
+   * - `likert`: a single identifier
+   */
   learnerResponse?: string;
-  /** Correct response pattern(s). */
+  /**
+   * Correct response pattern(s), each encoded per the interaction's `type` (same
+   * formats as {@link InteractionRecord.learnerResponse}). Passed through verbatim —
+   * not validated. SCORM 1.2 stores only the first pattern; SCORM 2004 stores all.
+   */
   correctResponses?: string[];
   /** Result: "correct", "incorrect", "unanticipated", "neutral", or a numeric score. */
   result?: string;
@@ -64,6 +78,16 @@ export interface ObjectiveRecord {
   progressMeasure?: number;
   /** Description (2004 only). */
   description?: string;
+}
+
+/** A single comment entry (learner or LMS authored). */
+export interface CommentRecord {
+  /** The comment text. */
+  comment: string;
+  /** Where in the content the comment applies (SCORM 2004 only). */
+  location?: string;
+  /** When the comment was made — ISO 8601 (SCORM 2004 only). */
+  timestamp?: string;
 }
 
 /** Score components. */
@@ -133,11 +157,20 @@ export interface IScormApi {
   // --- Interactions ---
   getInteractionCount(): Result<number, ScormError>;
   recordInteraction(index: number, interaction: InteractionRecord): Result<true, ScormError>;
+  /**
+   * Read back a recorded interaction. SCORM 2004 only — in SCORM 1.2 interactions
+   * are write-only per spec, so this returns a ScormError (code 404).
+   */
+  getInteraction(index: number): Result<InteractionRecord, ScormError>;
 
   // --- Comments (2004 primarily) ---
   addLearnerComment(comment: string, location?: string, timestamp?: string): Result<true, ScormError>;
   getLearnerCommentCount(): Result<number, ScormError>;
   getLmsCommentCount(): Result<number, ScormError>;
+  /** Read learner-authored comments (text included). */
+  getLearnerComments(): Result<CommentRecord[], ScormError>;
+  /** Read LMS-authored comments (text included). */
+  getLmsComments(): Result<CommentRecord[], ScormError>;
 
   // --- Preferences ---
   getPreferences(): Result<Record<string, string>, ScormError>;

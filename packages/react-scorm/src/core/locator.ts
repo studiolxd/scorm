@@ -60,6 +60,13 @@ export function findScormApi(
   version: ScormVersion,
   options: LocatorOptions = {},
 ): LocatorResult {
+  // SSR / non-browser guard: during server-side rendering (Next.js, Remix) there is
+  // no `window`. Touching it would throw a ReferenceError during render. Report "not
+  // found" so the provider applies its noLmsBehavior strategy instead of crashing.
+  if (typeof window === 'undefined') {
+    return { api: null, source: null };
+  }
+
   const { maxParentDepth = 10, checkOpener = true } = options;
   const apiName = version === '1.2' ? 'API' : 'API_1484_11';
 
@@ -111,4 +118,43 @@ export function findScormApi(
   }
 
   return { api: null, source: null };
+}
+
+/** Result of the version-detection search. */
+export interface DetectResult extends LocatorResult {
+  /** The SCORM version whose API was found, or null if none was found. */
+  version: ScormVersion | null;
+}
+
+/**
+ * Detect which SCORM API the host LMS exposes, without knowing the version in advance.
+ *
+ * Probes for SCORM 2004 (`window.API_1484_11`) first, then SCORM 1.2 (`window.API`).
+ * 2004 is checked first because an LMS that supports both typically prefers it, and a
+ * 2004 SCO launched against a 1.2-only handle would fail. Returns the found API plus
+ * the detected version, or `version: null` when neither is present (or during SSR).
+ *
+ * @example
+ * ```ts
+ * const found = detectScormApi();
+ * if (found.version) console.log(`LMS speaks SCORM ${found.version}`);
+ * ```
+ */
+export function detectScormApi(options: LocatorOptions = {}): DetectResult {
+  const order: ScormVersion[] = ['2004', '1.2'];
+  for (const version of order) {
+    const result = findScormApi(version, options);
+    if (result.api) {
+      return { ...result, version };
+    }
+  }
+  return { api: null, source: null, version: null };
+}
+
+/**
+ * Convenience wrapper around {@link detectScormApi} that returns only the detected
+ * SCORM version (`'2004'`, `'1.2'`, or `null` if no API is reachable).
+ */
+export function detectScormVersion(options: LocatorOptions = {}): ScormVersion | null {
+  return detectScormApi(options).version;
 }

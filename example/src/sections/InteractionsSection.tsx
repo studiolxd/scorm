@@ -4,6 +4,8 @@
  * Covers:
  *   api.recordInteraction(index, record) — write a learner response to the LMS
  *   api.getInteractionCount()            — number of interactions recorded
+ *   api.getInteraction(index)            — read an interaction back (2004 only;
+ *                                          write-only in 1.2)
  *
  * This section simulates a 4-question multiple-choice quiz. Each question records
  * a choice interaction with a correct response pattern. After submitting, it shows
@@ -115,11 +117,36 @@ export function InteractionsSection() {
     const countResult = api!.getInteractionCount();
     if (countResult.ok) {
       lines.push(`\ngetInteractionCount() → ${countResult.value}`);
+    } else {
+      lines.push(`\n✗ getInteractionCount() → ${countResult.error.message}`);
     }
 
     setRecordResult(lines.join('\n'));
     setRecordOk(allOk);
     setSubmitted(true);
+  };
+
+  // Read recorded interactions back out of the LMS. SCORM 2004 supports this;
+  // in SCORM 1.2 interactions are write-only, so the library returns an error.
+  const handleReadBack = () => {
+    if (!guard()) return;
+    const lines: string[] = [];
+    let allOk = true;
+
+    QUESTIONS.forEach((_q, i) => {
+      const r = api!.getInteraction(i);
+      if (r.ok) {
+        lines.push(
+          `Q${i + 1}: ${r.value.id} — response="${r.value.learnerResponse ?? ''}" result=${r.value.result ?? '—'}`,
+        );
+      } else {
+        lines.push(`✗ getInteraction(${i}) → [${r.error.code}] ${r.error.errorString}`);
+        allOk = false;
+      }
+    });
+
+    setRecordResult(lines.join('\n'));
+    setRecordOk(allOk);
   };
 
   const score = submitted
@@ -231,16 +258,22 @@ export function InteractionsSection() {
               Submit &amp; record interactions
             </button>
           ) : (
-            <button
-              className="btn"
-              onClick={() => {
-                setAnswers({});
-                setSubmitted(false);
-                setRecordResult('');
-              }}
-            >
-              Reset quiz
-            </button>
+            <>
+              <button className="btn" onClick={handleReadBack}>
+                Read interactions back{' '}
+                {status.version === '1.2' ? '(write-only in 1.2)' : ''}
+              </button>
+              <button
+                className="btn"
+                onClick={() => {
+                  setAnswers({});
+                  setSubmitted(false);
+                  setRecordResult('');
+                }}
+              >
+                Reset quiz
+              </button>
+            </>
           )}
         </div>
 

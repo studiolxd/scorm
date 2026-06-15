@@ -75,8 +75,9 @@ export function ScoreSection() {
         </div>
         <div className="controls">
           <div className="field">
-            <label className="field-label">Raw</label>
+            <label className="field-label" htmlFor="score-raw">Raw</label>
             <input
+              id="score-raw"
               className="field-input"
               type="number"
               value={raw}
@@ -86,8 +87,9 @@ export function ScoreSection() {
             />
           </div>
           <div className="field">
-            <label className="field-label">Min</label>
+            <label className="field-label" htmlFor="score-min">Min</label>
             <input
+              id="score-min"
               className="field-input"
               type="number"
               value={min}
@@ -95,8 +97,9 @@ export function ScoreSection() {
             />
           </div>
           <div className="field">
-            <label className="field-label">Max</label>
+            <label className="field-label" htmlFor="score-max">Max</label>
             <input
+              id="score-max"
               className="field-input"
               type="number"
               value={max}
@@ -105,10 +108,11 @@ export function ScoreSection() {
           </div>
           {status.version === '2004' && (
             <div className="field">
-              <label className="field-label">
+              <label className="field-label" htmlFor="score-scaled">
                 Scaled <span className="badge badge-2004">2004</span>
               </label>
               <input
+                id="score-scaled"
                 className="field-input"
                 type="number"
                 step="0.01"
