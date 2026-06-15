@@ -5,6 +5,7 @@
 > Angular, Svelte, and Web Components. Every API call returns a typed Result.
 
 Install: `npm i @studiolxd/scorm`
+Agent skill (Claude Code / Cursor): https://github.com/studiolxd/scorm-skills
 
 ## Entry points (subpath imports)
 
