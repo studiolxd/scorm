@@ -2,7 +2,7 @@
 
 # @studiolxd/scorm
 
-Monorepo dla `@studiolxd/scorm` — bezgłowego środowiska uruchomieniowego SCORM 1.2 / 2004 z **rdzeniem niezależnym od frameworka** oraz adapterami dla **React, Vue, Angular, Svelte, Web Components** i czystego JavaScriptu (vanilla) — wraz z interaktywną aplikacją demonstracyjną.
+Monorepo `@studiolxd/scorm` — headlessowego środowiska uruchomieniowego SCORM 1.2 / 2004 z **rdzeniem niezależnym od frameworka** oraz adapterami dla **React, Vue, Angular, Svelte, Web Components** i czystego JavaScriptu (vanilla) — wraz z interaktywną aplikacją demonstracyjną.
 
 > Wcześniej `@studiolxd/react-scorm`. API dla Reacta znajduje się teraz w podścieżce `@studiolxd/scorm/react`.
 
@@ -10,7 +10,7 @@ Monorepo dla `@studiolxd/scorm` — bezgłowego środowiska uruchomieniowego SCO
 
 | Pakiet | Opis | Dokumentacja |
 |---------|-------------|------|
-| [`@studiolxd/scorm`](./packages/scorm/) | Bezgłowe środowisko uruchomieniowe SCORM 1.2 / 2004 — niezależny rdzeń + adaptery frameworków | [README](./packages/scorm/README.md) |
+| [`@studiolxd/scorm`](./packages/scorm/) | Headlessowe środowisko uruchomieniowe SCORM 1.2 / 2004 — niezależny rdzeń + adaptery frameworków | [README](./packages/scorm/README.md) |
 | [`example`](./example/) | Interaktywna aplikacja demonstracyjna — prezentuje każdą funkcję biblioteki | [README](./example/README.md) |
 
 ## Pierwsze kroki
@@ -57,7 +57,7 @@ react-scorm/
 
 ## Publikowanie
 
-Do npm publikowany jest wyłącznie `packages/scorm`. Workspace `example` oraz katalog główny są prywatne. Aby opublikować:
+Do npm publikowany jest wyłącznie `packages/scorm`. Workspace `example` oraz katalog główny są prywatne. Aby opublikować pakiet:
 
 ```bash
 cd packages/scorm

@@ -2,17 +2,17 @@
 
 # @studiolxd/scorm
 
-Bezgłowa biblioteka TypeScript do integracji ze środowiskiem uruchomieniowym SCORM. **Rdzeń niezależny od frameworka** komunikuje się z LMS za pośrednictwem SCORM 1.2 lub SCORM 2004 (4. edycja), z cienkimi adapterami dla **React, Vue, Angular, Svelte, Web Components** oraz czystego JavaScriptu (vanilla) / `<script>`.
+Headlessowa biblioteka TypeScript do integracji ze środowiskiem uruchomieniowym SCORM. **Rdzeń niezależny od frameworka** komunikuje się z LMS poprzez SCORM 1.2 lub SCORM 2004 (4. edycja), z cienkimi adapterami dla **React, Vue, Angular, Svelte, Web Components** oraz czystego JavaScriptu (vanilla) / `<script>`.
 
 > Zmieniono nazwę z `@studiolxd/react-scorm`. API dla Reacta znajduje się teraz w podścieżce `@studiolxd/scorm/react`.
 
 **Najważniejsze funkcje:**
 - Pełna obsługa standardów SCORM 1.2 i 2004
 - Rdzeń niezależny od frameworka + adaptery React / Vue / Angular / Svelte / Web Component
-- Bezgłowość (brak UI) — interfejs budujesz samodzielnie
+- Headless (bez UI) — interfejs budujesz samodzielnie
 - Ścisłe typy TypeScript dla wszystkich ścieżek CMI i API
 - Obsługa błędów oparta na Result (brak niejawnych wyjątków)
-- Tryb mock w pamięci operacyjnej na potrzeby lokalnego developmentu (bez wymaganego LMS)
+- Tryb mock działający w pamięci na potrzeby lokalnej pracy programistycznej (bez konieczności posiadania LMS)
 - Opcjonalne pomocniki cyklu życia (`autoTerminate`, `autoCommit`)
 
 ## Instalacja
@@ -89,8 +89,8 @@ function CourseContent() {
 
 ## Pozostałe frameworki
 
-Wszystkie adaptery opakowują tę samą obserwowalną sesję (`createScormSession`). Instaluj jako
-zależność peer tylko ten pakiet, którego używasz.
+Wszystkie adaptery opakowują tę samą obserwowalną sesję (`createScormSession`). Jako zależność peer
+instaluj tylko ten pakiet, którego faktycznie używasz.
 
 **Vue 3**
 ```ts
@@ -139,7 +139,7 @@ bootstrapApplication(App, { providers: [provideScorm('auto', { noLmsBehavior: 'm
 
 ## ScormProvider
 
-Komponent `<ScormProvider>` lokalizuje API LMS i udostępnia je przez kontekst. **Nie** inicjalizuje się automatycznie — musisz jawnie wywołać `api.initialize()`.
+Komponent `<ScormProvider>` odnajduje API LMS i udostępnia je poprzez kontekst. **Nie** inicjalizuje się automatycznie — musisz jawnie wywołać `api.initialize()`.
 
 ```tsx
 <ScormProvider
@@ -160,10 +160,10 @@ Komponent `<ScormProvider>` lokalizuje API LMS i udostępnia je przez kontekst. 
 | Wartość | Zachowanie |
 |-------|----------|
 | `"error"` (domyślna) | `api` jest `null`, `status.apiFound` wynosi `false`. Operacje nie mogą być wywoływane. |
-| `"mock"` | Używa in-memory mock SCORM API. Idealne do lokalnego developmentu i testów. |
+| `"mock"` | Używa działającego w pamięci, atrapowego API SCORM (mock). Idealne do lokalnej pracy programistycznej i testów. |
 | `"throw"` | Rzuca `ScormError` podczas renderowania. Opakuj komponent w React **Error Boundary**. |
 
-> **Tryb `"throw"`** rzuca wyjątek synchronicznie wewnątrz `useMemo`. Bez Error Boundary błąd propaguje się w górę i niszczy całe poddrzewo komponentów. Zawsze opakowuj `<ScormProvider>` w Error Boundary, gdy używasz tego trybu.
+> **Tryb `"throw"`** rzuca wyjątek synchronicznie wewnątrz `useMemo`. Bez Error Boundary błąd propaguje się w górę i powoduje awarię całego poddrzewa komponentów. Używając tego trybu, zawsze opakowuj `<ScormProvider>` w Error Boundary.
 
 ## useScorm()
 
@@ -175,7 +175,7 @@ const { status, api, raw } = useScorm();
 |-------|------|-------------|
 | `status` | `ScormStatus` | Stan połączenia: `apiFound`, `initialized`*, `terminated`*, `version`, `noLmsBehavior` |
 | `api` | `IScormApi \| null` | Wysokopoziomowe API niezależne od wersji. `null`, gdy nie znaleziono API przy zachowaniu `"error"`. |
-| `raw` | `IScormDriver \| null` | Niskopoziomowy driver do bezpośrednich wywołań API (wyjście awaryjne). |
+| `raw` | `IScormDriver \| null` | Niskopoziomowy driver do bezpośrednich wywołań API (furtka awaryjna). |
 
 > **Uwaga:** `status` z `useScorm()` to migawka odczytana w momencie renderowania. Aby uzyskać **reaktywny** stan `initialized`/`terminated` (oraz opakowane `initialize`/`terminate`/`commit`), użyj **`useScormSession()`**, który subskrybuje bazową sesję za pośrednictwem `useSyncExternalStore`.
 
@@ -209,7 +209,7 @@ api.setScore({ raw: 85, min: 0, max: 100, scaled: 0.85 })  // scaled is 2004 onl
 api.getScore()  // Result<ScoreData, ScormError>
 ```
 
-**Walidacja:** `raw`, `min` i `max` muszą być skończonymi liczbami (NaN/Infinity są odrzucane z kodem błędu 405). `scaled` musi mieścić się w zakresie `[-1, 1]` (kod błędu 407 przy przekroczeniu zakresu). W przypadku SCORM 1.2 parametr `scaled` jest po cichu ignorowany.
+**Walidacja:** `raw`, `min` i `max` muszą być skończonymi liczbami (NaN/Infinity są odrzucane z kodem błędu 405). `scaled` musi mieścić się w zakresie `[-1, 1]` (kod błędu 407 przy przekroczeniu zakresu). W SCORM 1.2 parametr `scaled` jest po cichu pomijany.
 
 ### Lokalizacja i Suspend Data
 
@@ -318,7 +318,7 @@ api.getNavRequestValid('continue')         // 'continue' | 'previous'
 api.getNavRequestValid('previous')
 ```
 
-### Bezpośredni dostęp do API (wyjście awaryjne)
+### Bezpośredni dostęp do API (furtka awaryjna)
 
 ```ts
 api.getRaw('cmi.core.lesson_status')
@@ -345,11 +345,11 @@ if (result.ok) {
 
 Funkcje pomocnicze: `isOk()`, `isErr()`, `unwrap()`, `unwrapOr()`.
 
-> **Bezpieczeństwo:** `errorString` i `diagnostic` to ciągi znaków pochodzące bezpośrednio z LMS. Nie renderuj ich przez `innerHTML` ani żadne inne niezabezpieczone DOM API — traktuj je jako niezaufane dane wejściowe i stosuj HTML-escaping przed jakimkolwiek wstawieniem do DOM.
+> **Bezpieczeństwo:** `errorString` i `diagnostic` to ciągi znaków pochodzące bezpośrednio z LMS. Nie renderuj ich przez `innerHTML` ani żadne inne niezabezpieczone API DOM — traktuj je jako niezaufane dane wejściowe i zastosuj HTML-escaping przed jakimkolwiek wstawieniem do DOM.
 
 ## useScormSession (reaktywny stan — opcjonalnie)
 
-`useScorm()` celowo utrzymuje `status.initialized` jako statyczną migawkę — provider nie śledzi stanu cyklu życia. Jeśli potrzebujesz `initialized` i `terminated` jako reaktywnego stanu React (wyzwalającego ponowne renderowanie), użyj zamiast tego `useScormSession()`.
+`useScorm()` celowo utrzymuje `status.initialized` jako statyczną migawkę — provider nie śledzi stanu cyklu życia. Jeśli potrzebujesz `initialized` i `terminated` jako reaktywnego stanu React (wyzwalającego ponowne renderowanie), użyj w zamian `useScormSession()`.
 
 ```tsx
 import { useScormSession } from '@studiolxd/scorm/react';
@@ -416,7 +416,7 @@ formatScorm2004Time(90000) // "PT1M30S"
 
 ## Testowanie
 
-Do testów używaj `noLmsBehavior: 'mock'`. Mock korzysta z magazynu in-memory z rzeczywistym zachowaniem driver'a.
+Do testów używaj `noLmsBehavior: 'mock'`. Mock korzysta z magazynu w pamięci, zachowując się tak samo jak rzeczywisty driver.
 
 ```tsx
 // In tests
