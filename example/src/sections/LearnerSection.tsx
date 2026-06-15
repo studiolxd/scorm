@@ -13,8 +13,8 @@
  * shape without an LMS.
  */
 import { useSessionContext } from '../SessionContext';
-import type { Result } from '@studiolxd/react-scorm';
-import type { ScormError } from '@studiolxd/react-scorm';
+import type { Result } from '@studiolxd/scorm/react';
+import type { ScormError } from '@studiolxd/scorm/react';
 import { useState } from 'react';
 
 type StringResult = Result<string, ScormError>;

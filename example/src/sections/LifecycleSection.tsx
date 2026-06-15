@@ -11,8 +11,8 @@
  */
 import { useSessionContext } from '../SessionContext';
 import { useState } from 'react';
-import { useScormAutoCommit } from '@studiolxd/react-scorm';
-import type { Result, ScormError } from '@studiolxd/react-scorm';
+import { useScormAutoCommit } from '@studiolxd/scorm/react';
+import type { Result, ScormError } from '@studiolxd/scorm/react';
 
 type BoolResult = Result<true, ScormError> | undefined;
 
@@ -127,7 +127,7 @@ export function LifecycleSection() {
 
         <details className="code-details">
           <summary>Code example</summary>
-          <pre>{`import { ScormProvider, useScorm } from '@studiolxd/react-scorm';
+          <pre>{`import { ScormProvider, useScorm } from '@studiolxd/scorm/react';
 
 function Lesson() {
   const { api, status } = useScorm();
@@ -174,7 +174,7 @@ function Lesson() {
 
         <details className="code-details" style={{ marginTop: 14 }}>
           <summary>Code example</summary>
-          <pre>{`import { useScormAutoCommit } from '@studiolxd/react-scorm';
+          <pre>{`import { useScormAutoCommit } from '@studiolxd/scorm/react';
 
 function CourseContent() {
   // Flush every 30 seconds. Pass 0 to disable.
@@ -201,7 +201,7 @@ function CourseContent() {
 
         <details className="code-details" style={{ marginTop: 14 }}>
           <summary>Code example</summary>
-          <pre>{`import { useScormAutoTerminate } from '@studiolxd/react-scorm';
+          <pre>{`import { useScormAutoTerminate } from '@studiolxd/scorm/react';
 
 // Drop this into your root lesson component.
 // It auto-initializes, auto-commits, and auto-terminates.

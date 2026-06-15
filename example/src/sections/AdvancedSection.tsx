@@ -10,7 +10,7 @@
  *   formatScorm12Time(ms)        — format ms as HH:MM:SS.SS
  *   formatScorm2004Time(ms)      — format ms as ISO 8601 PT#H#M#S
  */
-import { formatScorm12Time, formatScorm2004Time } from '@studiolxd/react-scorm';
+import { formatScorm12Time, formatScorm2004Time } from '@studiolxd/scorm/react';
 import { useSessionContext } from '../SessionContext';
 import { useState } from 'react';
 
@@ -305,7 +305,7 @@ export function AdvancedSection() {
 
         <details className="code-details">
           <summary>Code example</summary>
-          <pre>{`import { formatScorm12Time, formatScorm2004Time } from '@studiolxd/react-scorm';
+          <pre>{`import { formatScorm12Time, formatScorm2004Time } from '@studiolxd/scorm/react';
 
 // 5430000 ms = 1h 30m 30s
 formatScorm12Time(5430000);   // → "01:30:30.00"

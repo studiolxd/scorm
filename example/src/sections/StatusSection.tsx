@@ -13,7 +13,7 @@
  * (cmi.core.lesson_status). SCORM 2004 separates them into two fields.
  */
 import { useSessionContext } from '../SessionContext';
-import type { Result, ScormError } from '@studiolxd/react-scorm';
+import type { Result, ScormError } from '@studiolxd/scorm/react';
 import { useState } from 'react';
 
 type LogEntry = { text: string; ok: boolean };

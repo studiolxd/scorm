@@ -9,9 +9,9 @@
     "jsdom": "^25.0.0"
   },
   "scripts": {
-    "build": "npm run build --workspace=packages/react-scorm",
-    "test": "npm run test:run --workspace=packages/react-scorm",
-    "dev:lib": "npm run dev --workspace=packages/react-scorm",
+    "build": "npm run build --workspace=packages/scorm",
+    "test": "npm run test:run --workspace=packages/scorm",
+    "dev:lib": "npm run dev --workspace=packages/scorm",
     "dev:example": "npm run dev --workspace=example"
   }
 }

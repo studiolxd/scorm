@@ -18,7 +18,7 @@
  *   - type "long-fill-in": 2004 only
  */
 import { useSessionContext } from '../SessionContext';
-import type { InteractionType } from '@studiolxd/react-scorm';
+import type { InteractionType } from '@studiolxd/scorm/react';
 import { useState } from 'react';
 
 interface Question {

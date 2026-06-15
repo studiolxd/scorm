@@ -1,12 +1,11 @@
-// React integration
-export { ScormProvider } from './react/scorm-provider';
-export { useScorm } from './react/use-scorm';
-export { useScormAutoTerminate } from './react/use-scorm-auto-terminate';
-export { useScormAutoCommit } from './react/use-scorm-auto-commit';
-export { useScormSession } from './react/use-scorm-session';
-export type { ScormContextValue } from './react/scorm-context';
-export type { AutoTerminateOptions } from './react/use-scorm-auto-terminate';
-export type { ScormSessionValue } from './react/use-scorm-session';
+// ─────────────────────────────────────────────────────────────────────────────
+// @studiolxd/scorm — framework-agnostic core (subpath ".")
+//
+// Framework adapters live in their own subpaths:
+//   @studiolxd/scorm/react   @studiolxd/scorm/vue   @studiolxd/scorm/angular
+//   @studiolxd/scorm/svelte  @studiolxd/scorm/wc
+// This entry has ZERO framework imports.
+// ─────────────────────────────────────────────────────────────────────────────
 
 // High-level API
 export { ScormApi } from './api/scorm-api';
@@ -18,6 +17,15 @@ export type {
   InteractionType,
   CommentRecord,
 } from './types/api';
+
+// Observable session (vanilla-friendly, basis for every adapter)
+export { createScormSession } from './session/create-scorm-session';
+export type { ScormSession, ScormSessionEvent } from './session/create-scorm-session';
+
+// Lifecycle helpers (framework-agnostic)
+export { autoTerminate } from './lifecycle/auto-terminate';
+export type { AutoTerminateOptions } from './lifecycle/auto-terminate';
+export { autoCommit } from './lifecycle/auto-commit';
 
 // Path builders
 export {
@@ -70,7 +78,7 @@ export { Scorm12Driver } from './core/scorm12-driver';
 export { Scorm2004Driver } from './core/scorm2004-driver';
 export { createDriver } from './core/create-driver';
 
-// Mock (for testing)
+// Mock (for testing / no-LMS dev)
 export { MockScorm12Api } from './mock/mock-scorm12-api';
 export { MockScorm2004Api } from './mock/mock-scorm2004-api';
 export { createMockDriver } from './mock/mock-driver';

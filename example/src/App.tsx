@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { ScormProvider } from '@studiolxd/react-scorm';
-import type { ScormVersion } from '@studiolxd/react-scorm';
+import { ScormProvider } from '@studiolxd/scorm/react';
+import type { ScormVersion } from '@studiolxd/scorm/react';
 import { SessionContext, useSessionValue } from './SessionContext';
 import { LifecycleSection } from './sections/LifecycleSection';
 import { LearnerSection } from './sections/LearnerSection';

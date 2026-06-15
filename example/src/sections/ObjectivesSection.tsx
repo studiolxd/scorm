@@ -11,7 +11,7 @@
  *   progressMeasure, description
  */
 import { useSessionContext } from '../SessionContext';
-import type { ObjectiveRecord } from '@studiolxd/react-scorm';
+import type { ObjectiveRecord } from '@studiolxd/scorm/react';
 import { useState } from 'react';
 
 export function ObjectivesSection() {
