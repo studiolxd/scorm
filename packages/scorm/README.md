@@ -449,6 +449,18 @@ const path: Scorm12CmiPath = 'cmi.core.lesson_status';  // OK
 // const bad: Scorm12CmiPath = 'cmi.core.typo';          // ERROR
 ```
 
+## AI coding agents
+
+Using Claude Code, Cursor, or another AI coding assistant? Add the **[scorm-skills](https://github.com/studiolxd/scorm-skills)** so the agent knows how to use this library:
+
+```
+# Claude Code
+/plugin marketplace add studiolxd/scorm-skills
+/plugin install scorm-integration@studiolxd-scorm
+
+# Cursor: copy cursor/scorm-integration.mdc into your project's .cursor/rules/
+```
+
 ## Additional Documentation
 
 - [SCORM 1.2 vs 2004 Mapping Table](./docs/scorm-mapping-table.md)
