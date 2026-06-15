@@ -1,15 +1,27 @@
 # Plan — Núcleo agnóstico + multi-framework + IA
 
-> Estado: **propuesta de planificación** (no implementado). Documento de trabajo.
-> Alcance de esta fase ("Opción A completa"): extraer el **core agnóstico** con API
-> observable, soporte vanilla + Web Component + build IIFE, y los adaptadores de
-> framework como **subpaths del mismo paquete**.
+> Estado: **IMPLEMENTADO** en la rama `feat/agnostic-core` (versión `2.0.0`).
+> Decisiones confirmadas: naming **`@studiolxd/scorm`** (literal); se publica directamente
+> como **2.0.0** (el 1.1.0 no se publica standalone bajo el nombre viejo).
 >
-> **Decisión de empaquetado: UN SOLO PAQUETE con subpath exports** (modelo Zustand/Valtio),
-> no varios paquetes. Razonado en §1. Angular validado dentro de este modelo (§5).
+> Modelo de empaquetado: **UN SOLO PAQUETE con subpath exports** (modelo Zustand/Valtio).
+> Angular validado dentro de este modelo (§5).
 >
-> Naming: el paquete pasa a llamarse **`@studiolxd/scorm`**. El actual
-> `@studiolxd/react-scorm` se renombra vía deprecate + shim (§7).
+> **Fases — estado:**
+> - [x] 1/1b Renombrado + split core/`./react` + tsup multi-entry + exports
+> - [x] 2 `createScormSession()` observable
+> - [x] 3 `autoTerminate`/`autoCommit` vanilla (hooks React delegan)
+> - [x] 4 Build IIFE `window.Scorm` + `unpkg`/`jsdelivr`
+> - [x] 5 Web Component `./wc`
+> - [x] 6 React sobre el core (`useSyncExternalStore`)
+> - [x] 6b Vue (`./vue`) + Svelte (`./svelte`)
+> - [x] 11 Angular (`./angular`, sin decoradores) — adaptador y build OK
+> - [x] 8 `llms.txt` + `AGENTS.md` + README (imports en 6 idiomas)
+> - [x] 9 `skills/` (fuente única → Claude/Cursor/portable)
+> - [x] 10 Pestaña Vanilla/WC en el ejemplo
+> - [ ] **Pendiente:** smoke test de Angular 17+ en CI (compilación AOT real)
+> - [ ] **Pendiente:** traducción completa de los READMEs no-inglés (imports ya corregidos)
+> - [ ] **N/A:** shim + deprecate de `@studiolxd/react-scorm` (sólo al publicar; el 1.1.0 no se publica)
 
 ---
 
