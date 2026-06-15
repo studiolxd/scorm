@@ -11,6 +11,7 @@ import { ObjectivesSection } from './sections/ObjectivesSection';
 import { InteractionsSection } from './sections/InteractionsSection';
 import { CommentsSection } from './sections/CommentsSection';
 import { AdvancedSection } from './sections/AdvancedSection';
+import { PlatformsSection } from './sections/PlatformsSection';
 import './App.css';
 
 export const TABS = [
@@ -23,6 +24,7 @@ export const TABS = [
   { id: 'interactions', label: 'Interactions', icon: '◇' },
   { id: 'comments', label: 'Comments', icon: '◫' },
   { id: 'advanced', label: 'Advanced', icon: '⟡' },
+  { id: 'platforms', label: 'Vanilla / WC', icon: '◐' },
 ] as const;
 
 export type TabId = (typeof TABS)[number]['id'];
@@ -64,6 +66,7 @@ function ScormDemoShell({ activeTab, onTabChange }: ScormDemoShellProps) {
         {activeTab === 'interactions' && <InteractionsSection />}
         {activeTab === 'comments' && <CommentsSection />}
         {activeTab === 'advanced' && <AdvancedSection />}
+        {activeTab === 'platforms' && <PlatformsSection />}
       </main>
     </div>
     </SessionContext.Provider>
