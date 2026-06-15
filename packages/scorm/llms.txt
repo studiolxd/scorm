@@ -1,0 +1,108 @@
+# @studiolxd/scorm
+
+> Headless SCORM 1.2 / 2004 runtime for the browser. Framework-agnostic core with
+> a built-in mock mode (run without a real LMS) and adapters for React, Vue,
+> Angular, Svelte, and Web Components. Every API call returns a typed Result.
+
+Install: `npm i @studiolxd/scorm`
+
+## Entry points (subpath imports)
+
+- `@studiolxd/scorm` — framework-agnostic core + vanilla (`createScormSession`, `autoTerminate`, `autoCommit`, `ScormApi`, `Result`, `ScormError`, locator, mock).
+- `@studiolxd/scorm/react` — `ScormProvider`, `useScorm`, `useScormSession`, `useScormAutoTerminate`, `useScormAutoCommit` (re-exports the core too).
+- `@studiolxd/scorm/vue` — `useScorm()` composable.
+- `@studiolxd/scorm/angular` — `provideScorm()` + `SCORM` token (Angular >= 17).
+- `@studiolxd/scorm/svelte` — `createScormStore()`.
+- `@studiolxd/scorm/wc` — registers the `<scorm-session>` custom element.
+- CDN `<script>` global: `window.Scorm` (file `dist/scorm.global.js`).
+
+## Core concept: the session
+
+```ts
+import { createScormSession } from '@studiolxd/scorm';
+
+const session = createScormSession('auto', { noLmsBehavior: 'mock' });
+// version: '1.2' | '2004' | 'auto' (detects 2004 then 1.2)
+// noLmsBehavior: 'error' (default) | 'mock' | 'throw'
+
+session.initialize();              // returns Result | undefined (undefined when no API)
+session.api?.setScore({ raw: 80, min: 0, max: 100 });
+session.api?.setComplete();
+session.commit();
+session.terminate();
+
+session.on('change', (status) => { /* status.initialized / .terminated */ });
+```
+
+## Results: always check `.ok`
+
+Every API method returns `Result<T, ScormError>` (or `| undefined` on the session
+when there is no API). NEVER read `.value` without checking `.ok` first.
+
+```ts
+const r = session.api!.getLearnerName();
+if (r.ok) console.log(r.value);
+else console.error(r.error.code, r.error.errorString);
+```
+
+`ScormError` fields: `code`, `errorString`, `operation`, `path`, `diagnostic`,
+`version`, `apiFound`, `initialized`.
+
+## High-level API (IScormApi, via session.api)
+
+- Lifecycle: `initialize()`, `commit()`, `terminate()`
+- Status: `setComplete()`, `setIncomplete()`, `setPassed()`, `setFailed()`, `getCompletionStatus()`, `getSuccessStatus()`
+- Score: `setScore({raw,min,max,scaled?})`, `getScore()`
+- Location/state: `setLocation()/getLocation()`, `setSuspendData()/getSuspendData()`
+- Time: `setSessionTime(ms)`, `getTotalTime()`
+- Learner: `getLearnerId()`, `getLearnerName()`, `getMode()`, `getCredit()`, `getEntry()`, `getLaunchData()`
+- Objectives: `setObjective(i, rec)`, `getObjective(i)`, `getObjectiveCount()`
+- Interactions: `recordInteraction(i, rec)`, `getInteraction(i)`, `getInteractionCount()`
+- Comments: `addLearnerComment(text, location?, timestamp?)`, `getLearnerComments()`, `getLmsComments()`, counts
+- Preferences: `getPreferences()`, `setPreference(k, v)`
+- Progress (2004): `setProgressMeasure(0..1)`
+- Nav (2004): `setNavRequest()`, `getNavRequestValid('continue'|'previous')`
+- Escape hatch: `getRaw(path)`, `setRaw(path, value)`
+
+## Adapter quickstarts
+
+React:
+```tsx
+import { ScormProvider, useScormSession } from '@studiolxd/scorm/react';
+<ScormProvider version="auto" options={{ noLmsBehavior: 'mock' }}><Course/></ScormProvider>
+function Course(){ const { initialized, initialize, api } = useScormSession(); /* ... */ }
+```
+
+Vue:
+```ts
+import { useScorm } from '@studiolxd/scorm/vue';
+const { status, initialize, session } = useScorm('auto', { noLmsBehavior: 'mock' });
+```
+
+Angular (>=17):
+```ts
+import { provideScorm, SCORM } from '@studiolxd/scorm/angular';
+bootstrapApplication(App, { providers: [provideScorm('auto', { noLmsBehavior: 'mock' })] });
+const { session, status } = inject(SCORM); // status() is a signal
+```
+
+Web Component / plain HTML:
+```html
+<script type="module">import '@studiolxd/scorm/wc';</script>
+<scorm-session version="auto" no-lms-behavior="mock" auto-terminate></scorm-session>
+```
+
+## Gotchas (read these)
+
+- Always check `.ok` before `.value`. On the session, lifecycle methods return
+  `undefined` when no SCORM API was found (`noLmsBehavior: 'error'`).
+- SCORM 1.2 interactions are WRITE-ONLY: `getInteraction()` returns an error (code
+  404) in 1.2; only 2004 can read them back.
+- SCORM 1.2 `setScore` raw/min/max must be 0–100 (validated, error 405 otherwise).
+  SCORM 2004 `scaled` must be -1..1.
+- `setProgressMeasure` is a no-op in 1.2.
+- A terminated session/driver cannot be re-initialized (SCORM rule). To start a new
+  session, create a new one (or remount the React provider with a changed `key`).
+- SSR-safe: API discovery is guarded against missing `window`. The `/wc` import is
+  a no-op under SSR. Import `/wc` client-side only.
+- `setSessionTime(ms)` takes milliseconds and formats internally.

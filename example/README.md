@@ -1,12 +1,13 @@
 🌐 [English](README.md) · [Español](README.es.md) · [Français](README.fr.md) · [Português](README.pt.md) · [Deutsch](README.de.md) · [Polski](README.pl.md)
 
-# `@studiolxd/react-scorm` — Interactive Demo
+# `@studiolxd/scorm` — Interactive Demo
 
 An interactive, fully working example application that demonstrates every feature of the
-[`@studiolxd/react-scorm`](https://www.npmjs.com/package/@studiolxd/react-scorm) library.
+[`@studiolxd/scorm`](https://www.npmjs.com/package/@studiolxd/scorm) library — including the
+framework-agnostic core (vanilla) and the `<scorm-session>` Web Component.
 
-Built with **React 19 + TypeScript + Vite**. Runs entirely in the browser using the library's
-**mock mode** — no Learning Management System (LMS) required.
+Built with **React 19 + TypeScript + Vite** (using the `@studiolxd/scorm/react` adapter). Runs
+entirely in the browser using the library's **mock mode** — no Learning Management System (LMS) required.
 
 ---
 
@@ -27,19 +28,20 @@ The app has a **SCORM version switcher** in the header (1.2 / 2004). Switching v
 remounts the `ScormProvider` with the new version, resetting all state. This lets you compare
 the behavior of both SCORM standards side-by-side.
 
-### 9 Demo Sections
+### 10 Demo Sections
 
 | Tab | Features demonstrated |
 |-----|-----------------------|
-| **Lifecycle** | `initialize()`, `commit()`, `terminate()`, live `ScormStatus`, `useScormAutoTerminate` |
+| **Lifecycle** | `initialize()`, `commit()`, `terminate()`, live `ScormStatus`, `useScormAutoTerminate`, `useScormAutoCommit` |
 | **Learner** | `getLearnerId()`, `getLearnerName()`, `getLaunchData()`, `getMode()`, `getCredit()`, `getEntry()`, `getMasteryScore()`, `getMaxTimeAllowed()`, `getTimeLimitAction()` |
 | **Status** | `setComplete()`, `setIncomplete()`, `setPassed()`, `setFailed()`, `getCompletionStatus()`, `getSuccessStatus()` |
 | **Score** | `setScore({ raw, min, max, scaled? })`, `getScore()`, `getPreferences()`, `setPreference()` |
 | **Location** | `setLocation()`, `getLocation()`, `setSuspendData()`, `getSuspendData()`, `setSessionTime()`, `getTotalTime()`, `setExit()` |
 | **Objectives** | `setObjective()`, `getObjective()`, `getObjectiveCount()` — form adapts to 1.2/2004 |
-| **Interactions** | `recordInteraction()`, `getInteractionCount()` — live 4-question quiz with visual correct/incorrect feedback |
-| **Comments** | `addLearnerComment()`, `getLearnerCommentCount()`, `getLmsCommentCount()` |
+| **Interactions** | `recordInteraction()`, `getInteractionCount()`, `getInteraction()` — live 4-question quiz with visual correct/incorrect feedback |
+| **Comments** | `addLearnerComment()`, `getLearnerCommentCount()`, `getLmsCommentCount()`, `getLearnerComments()`, `getLmsComments()` |
 | **Advanced** | `getRaw()`, `setRaw()`, `setProgressMeasure()`, `setNavRequest()`, `getNavRequestValid()`, `formatScorm12Time()`, `formatScorm2004Time()` |
+| **Vanilla / WC** | `createScormSession()` (framework-agnostic) and the `<scorm-session>` Web Component, live in mock mode |
 
 ---
 
@@ -64,14 +66,15 @@ on page refresh.
 
 ## Library Overview
 
-`@studiolxd/react-scorm` is a headless TypeScript/React SCORM runtime library.
+`@studiolxd/scorm` is a headless TypeScript SCORM runtime library: a framework-agnostic core
+with adapters for React, Vue, Angular, Svelte, and Web Components. This demo uses the React adapter.
 
 ### Core Concepts
 
 **1. Provider + Hook**
 
 ```tsx
-import { ScormProvider, useScorm } from '@studiolxd/react-scorm';
+import { ScormProvider, useScorm } from '@studiolxd/scorm/react';
 
 // Wrap your app (or lesson root)
 function Root() {
@@ -105,7 +108,7 @@ useEffect(() => {
 Or use the opt-in auto-terminate hook:
 
 ```tsx
-import { useScormAutoTerminate } from '@studiolxd/react-scorm';
+import { useScormAutoTerminate } from '@studiolxd/scorm/react';
 
 function Lesson() {
   // Auto-initializes on mount, auto-terminates on unmount/unload
@@ -116,7 +119,7 @@ function Lesson() {
 Or use `useScormSession()` for reactive initialized/terminated state:
 
 ```tsx
-import { useScormSession } from '@studiolxd/react-scorm';
+import { useScormSession } from '@studiolxd/scorm/react';
 
 function Course() {
   const { initialized, initialize, terminate, api } = useScormSession();

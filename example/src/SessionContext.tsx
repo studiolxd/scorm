@@ -7,8 +7,8 @@
  * of the session lifecycle.
  */
 import { createContext, useContext, useState, useCallback } from 'react';
-import { useScorm } from '@studiolxd/react-scorm';
-import type { Result, ScormError } from '@studiolxd/react-scorm';
+import { useScorm } from '@studiolxd/scorm/react';
+import type { Result, ScormError } from '@studiolxd/scorm/react';
 
 type BoolResult = Result<true, ScormError> | undefined;
 
