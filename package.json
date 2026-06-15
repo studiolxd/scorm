@@ -1,5 +1,5 @@
 {
-  "name": "@studiolxd/react-scorm-monorepo",
+  "name": "@studiolxd/scorm-monorepo",
   "private": true,
   "workspaces": [
     "packages/*",
