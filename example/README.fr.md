@@ -66,7 +66,7 @@ L'application utilise `noLmsBehavior: 'mock'` dans `ScormProvider`. Cela active 
 **1. Provider + Hook**
 
 ```tsx
-import { ScormProvider, useScorm } from '@studiolxd/react-scorm';
+import { ScormProvider, useScorm } from '@studiolxd/scorm/react';
 
 // Wrap your app (or lesson root)
 function Root() {
@@ -100,7 +100,7 @@ useEffect(() => {
 Ou utilisez le hook optionnel d'auto-terminaison :
 
 ```tsx
-import { useScormAutoTerminate } from '@studiolxd/react-scorm';
+import { useScormAutoTerminate } from '@studiolxd/scorm/react';
 
 function Lesson() {
   // Auto-initializes on mount, auto-terminates on unmount/unload
@@ -111,7 +111,7 @@ function Lesson() {
 Ou utilisez `useScormSession()` pour un état réactif `initialized`/`terminated` :
 
 ```tsx
-import { useScormSession } from '@studiolxd/react-scorm';
+import { useScormSession } from '@studiolxd/scorm/react';
 
 function Course() {
   const { initialized, initialize, terminate, api } = useScormSession();

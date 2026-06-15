@@ -71,7 +71,7 @@ armazenados em memória e perdidos ao atualizar a página.
 **1. Provider + Hook**
 
 ```tsx
-import { ScormProvider, useScorm } from '@studiolxd/react-scorm';
+import { ScormProvider, useScorm } from '@studiolxd/scorm/react';
 
 // Wrap your app (or lesson root)
 function Root() {
@@ -105,7 +105,7 @@ useEffect(() => {
 Ou use o hook opcional de terminação automática:
 
 ```tsx
-import { useScormAutoTerminate } from '@studiolxd/react-scorm';
+import { useScormAutoTerminate } from '@studiolxd/scorm/react';
 
 function Lesson() {
   // Auto-initializes on mount, auto-terminates on unmount/unload
@@ -116,7 +116,7 @@ function Lesson() {
 Ou use `useScormSession()` para estado reativo de inicialização/encerramento:
 
 ```tsx
-import { useScormSession } from '@studiolxd/react-scorm';
+import { useScormSession } from '@studiolxd/scorm/react';
 
 function Course() {
   const { initialized, initialize, terminate, api } = useScormSession();

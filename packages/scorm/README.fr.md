@@ -16,7 +16,7 @@ Une bibliothèque React + TypeScript sans interface graphique pour l'intégratio
 ## Installation
 
 ```bash
-npm install @studiolxd/react-scorm
+npm install @studiolxd/scorm
 ```
 
 React 18+ est requis comme dépendance pair.
@@ -24,7 +24,7 @@ React 18+ est requis comme dépendance pair.
 ## Démarrage rapide
 
 ```tsx
-import { ScormProvider, useScorm } from '@studiolxd/react-scorm';
+import { ScormProvider, useScorm } from '@studiolxd/scorm/react';
 
 function App() {
   return (
@@ -275,7 +275,7 @@ Fonctions utilitaires : `isOk()`, `isErr()`, `unwrap()`, `unwrapOr()`.
 `useScorm()` maintient intentionnellement `status.initialized` comme un instantané statique — le provider ne suit pas l'état du cycle de vie. Si vous avez besoin de `initialized` et `terminated` comme état React réactif (pour déclencher des rendus), utilisez `useScormSession()` à la place.
 
 ```tsx
-import { useScormSession } from '@studiolxd/react-scorm';
+import { useScormSession } from '@studiolxd/scorm/react';
 
 function Course() {
   const { initialized, initialize, terminate, api } = useScormSession();
@@ -322,7 +322,7 @@ function CourseContent() {
 Fonctions utilitaires typées pour construire des chemins CMI indexés :
 
 ```ts
-import { scorm12ObjectivePath, scorm2004InteractionPath } from '@studiolxd/react-scorm';
+import { scorm12ObjectivePath, scorm2004InteractionPath } from '@studiolxd/scorm/react';
 
 scorm12ObjectivePath(0, 'score.raw')       // "cmi.objectives.0.score.raw"
 scorm2004InteractionPath(1, 'learner_response')  // "cmi.interactions.1.learner_response"
@@ -331,7 +331,7 @@ scorm2004InteractionPath(1, 'learner_response')  // "cmi.interactions.1.learner_
 ## Formateurs de temps
 
 ```ts
-import { formatScorm12Time, formatScorm2004Time } from '@studiolxd/react-scorm';
+import { formatScorm12Time, formatScorm2004Time } from '@studiolxd/scorm/react';
 
 formatScorm12Time(90000)   // "00:01:30.00"
 formatScorm2004Time(90000) // "PT1M30S"
@@ -351,7 +351,7 @@ Utilisez `noLmsBehavior: 'mock'` pour les tests. Le mock utilise un store en mé
 Vous pouvez également utiliser les classes mock directement :
 
 ```ts
-import { MockScorm12Api, Scorm12Driver, ScormApi, createLogger } from '@studiolxd/react-scorm';
+import { MockScorm12Api, Scorm12Driver, ScormApi, createLogger } from '@studiolxd/scorm/react';
 
 const mockApi = new MockScorm12Api();
 const driver = new Scorm12Driver(mockApi, createLogger(false));
@@ -365,7 +365,7 @@ api.initialize();
 Tous les chemins CMI sont strictement typés :
 
 ```ts
-import type { Scorm12CmiPath, Scorm2004CmiPath } from '@studiolxd/react-scorm';
+import type { Scorm12CmiPath, Scorm2004CmiPath } from '@studiolxd/scorm/react';
 
 // These types catch typos at compile time:
 const path: Scorm12CmiPath = 'cmi.core.lesson_status';  // OK
