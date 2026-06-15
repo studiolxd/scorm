@@ -2,18 +2,18 @@
 
 # @studiolxd/scorm
 
-Eine Headless-TypeScript-Bibliothek für die Integration der SCORM-Laufzeitumgebung. Ein **frameworkunabhängiger Kern** kommuniziert über SCORM 1.2 oder SCORM 2004 (4th Edition) mit einem LMS, ergänzt durch schlanke Adapter für **React, Vue, Angular, Svelte, Web Components** sowie reines Vanilla-JS / `<script>`.
+Eine Headless-TypeScript-Bibliothek für die SCORM-Runtime-Integration. Ein **frameworkunabhängiger Kern** kommuniziert über SCORM 1.2 oder SCORM 2004 (4th Edition) mit einem LMS, ergänzt durch schlanke Adapter für **React, Vue, Angular, Svelte, Web Components** sowie reines Vanilla-JS / `<script>`.
 
-> Umbenannt von `@studiolxd/react-scorm`. Die React-API befindet sich jetzt im Unterpfad `@studiolxd/scorm/react`.
+> Umbenannt von `@studiolxd/react-scorm`. Die React-API liegt jetzt unter dem Subpath `@studiolxd/scorm/react`.
 
-**Hauptmerkmale:**
+**Hauptfunktionen:**
 - Vollständige Abdeckung der Standards SCORM 1.2 und 2004
 - Frameworkunabhängiger Kern + Adapter für React / Vue / Angular / Svelte / Web Components
 - Headless (keine UI) — du baust die Oberfläche
 - Strenge TypeScript-Typen für alle CMI-Pfade und APIs
-- Result-basierte Fehlerbehandlung (keine impliziten Ausnahmen)
+- Result-basierte Fehlerbehandlung (keine impliziten Exceptions)
 - In-Memory-Mock-Modus für die lokale Entwicklung (kein LMS erforderlich)
-- Optionale Lifecycle-Helfer (`autoTerminate`, `autoCommit`)
+- Optionale Lifecycle-Helper (`autoTerminate`, `autoCommit`)
 
 ## Installation
 
@@ -21,7 +21,7 @@ Eine Headless-TypeScript-Bibliothek für die Integration der SCORM-Laufzeitumgeb
 npm install @studiolxd/scorm
 ```
 
-Framework-Pakete (React, Vue usw.) sind **optionale** Peer-Dependencies — installiere nur das, das du verwendest.
+Die Framework-Pakete (React, Vue usw.) sind **optionale** Peer-Dependencies — installiere nur das, das du verwendest.
 
 ## Einstiegspunkte
 
@@ -89,7 +89,7 @@ function CourseContent() {
 
 ## Andere Frameworks
 
-Alle Adapter umschließen dieselbe beobachtbare Session (`createScormSession`). Installiere nur das
+Alle Adapter kapseln dieselbe Observable-Session (`createScormSession`). Installiere nur das
 Paket, das du verwendest, als Peer-Dependency.
 
 **Vue 3**
@@ -139,7 +139,7 @@ bootstrapApplication(App, { providers: [provideScorm('auto', { noLmsBehavior: 'm
 
 ## ScormProvider
 
-Die `<ScormProvider>`-Komponente sucht die LMS-API und stellt sie über den Kontext bereit. Sie initialisiert **nicht** automatisch — du musst `api.initialize()` explizit aufrufen.
+Die `<ScormProvider>`-Komponente ermittelt die LMS-API und stellt sie über den Context bereit. Sie initialisiert **nicht** automatisch — du musst `api.initialize()` explizit aufrufen.
 
 ```tsx
 <ScormProvider
@@ -161,9 +161,9 @@ Die `<ScormProvider>`-Komponente sucht die LMS-API und stellt sie über den Kont
 |-------|----------|
 | `"error"` (Standard) | `api` ist `null`, `status.apiFound` ist `false`. Operationen können nicht aufgerufen werden. |
 | `"mock"` | Verwendet eine In-Memory-Mock-SCORM-API. Ideal für lokale Entwicklung und Tests. |
-| `"throw"` | Wirft einen `ScormError` beim Rendern. Mit einer React **Error Boundary** umschließen. |
+| `"throw"` | Wirft beim Rendern einen `ScormError`. Mit einer React **Error Boundary** umschließen. |
 
-> **`"throw"`-Modus** wirft synchron innerhalb von `useMemo`. Ohne eine Error Boundary propagiert der Fehler nach oben und bringt den gesamten Teilbaum zum Absturz. Umschließe `<ScormProvider>` bei Verwendung dieses Modus immer mit einer Error Boundary.
+> Der **`"throw"`-Modus** wirft synchron innerhalb von `useMemo`. Ohne eine Error Boundary propagiert der Fehler nach oben und bringt den gesamten Teilbaum zum Absturz. Umschließe `<ScormProvider>` bei Verwendung dieses Modus immer mit einer Error Boundary.
 
 ## useScorm()
 
@@ -175,13 +175,13 @@ const { status, api, raw } = useScorm();
 |-------|------|-------------|
 | `status` | `ScormStatus` | Verbindungsstatus: `apiFound`, `initialized`*, `terminated`*, `version`, `noLmsBehavior` |
 | `api` | `IScormApi \| null` | Versionsneutrale High-Level-API. `null`, wenn bei `"error"`-Verhalten keine API gefunden wurde. |
-| `raw` | `IScormDriver \| null` | Low-Level-Treiber für direkte API-Aufrufe (Notausstieg). |
+| `raw` | `IScormDriver \| null` | Low-Level-Treiber für direkte API-Aufrufe (Escape Hatch). |
 
-> **Hinweis:** Der `status` aus `useScorm()` ist ein zur Renderzeit gelesener Schnappschuss. Für **reaktiven** `initialized`/`terminated`-Zustand (und umschlossene `initialize`/`terminate`/`commit`) verwende **`useScormSession()`**, das die zugrunde liegende Session über `useSyncExternalStore` abonniert.
+> **Hinweis:** Der `status` aus `useScorm()` ist ein zur Render-Zeit gelesener Snapshot. Für **reaktiven** `initialized`/`terminated`-Zustand (und die gekapselten `initialize`/`terminate`/`commit`) verwende **`useScormSession()`**, das die zugrunde liegende Session über `useSyncExternalStore` abonniert.
 
 ## High-Level-API
 
-Alle Methoden geben `Result<T, ScormError>` zurück — prüfe `result.ok` vor dem Zugriff auf den Wert.
+Alle Methoden geben `Result<T, ScormError>` zurück — prüfe `result.ok`, bevor du auf den Wert zugreifst.
 
 ### Lifecycle
 
@@ -318,7 +318,7 @@ api.getNavRequestValid('continue')         // 'continue' | 'previous'
 api.getNavRequestValid('previous')
 ```
 
-### Direktzugriff (Notausstieg)
+### Direktzugriff (Escape Hatch)
 
 ```ts
 api.getRaw('cmi.core.lesson_status')
@@ -327,7 +327,7 @@ api.setRaw('cmi.core.lesson_status', 'completed')
 
 ## Fehlerbehandlung
 
-Alle Operationen geben `Result<T, ScormError>` zurück, anstatt Ausnahmen zu werfen:
+Alle Operationen geben `Result<T, ScormError>` zurück, anstatt Exceptions zu werfen:
 
 ```ts
 const result = api.setComplete();
@@ -345,11 +345,11 @@ if (result.ok) {
 
 Hilfsfunktionen: `isOk()`, `isErr()`, `unwrap()`, `unwrapOr()`.
 
-> **Sicherheit:** `errorString` und `diagnostic` sind Zeichenketten, die direkt vom LMS stammen. Rendere sie niemals über `innerHTML` oder eine nicht bereinigte DOM-API — behandle sie als nicht vertrauenswürdige Eingaben und escape HTML vor jeder DOM-Einfügung.
+> **Sicherheit:** `errorString` und `diagnostic` sind Strings, die direkt vom LMS stammen. Rendere sie niemals über `innerHTML` oder eine andere ungefilterte DOM-API — behandle sie als nicht vertrauenswürdige Eingabe und escape sie als HTML, bevor du sie ins DOM einfügst.
 
 ## useScormSession (reaktiver Zustand, opt-in)
 
-`useScorm()` hält `status.initialized` bewusst als statischen Schnappschuss — der Provider verfolgt den Lifecycle-Zustand nicht. Wenn du `initialized` und `terminated` als reaktiven React-Zustand benötigst (um Re-Renders auszulösen), verwende stattdessen `useScormSession()`.
+`useScorm()` hält `status.initialized` bewusst als statischen Snapshot — der Provider verfolgt den Lifecycle-Zustand nicht. Wenn du `initialized` und `terminated` als reaktiven React-Zustand benötigst (um Re-Renders auszulösen), verwende stattdessen `useScormSession()`.
 
 ```tsx
 import { useScormSession } from '@studiolxd/scorm/react';
@@ -364,17 +364,17 @@ function Course() {
 }
 ```
 
-`useScormSession()` ist eine Obermenge von `useScorm()` — es gibt alles zurück, was `useScorm()` zurückgibt (`api`, `status`, `raw`), plus:
+`useScormSession()` ist eine Obermenge von `useScorm()` — es gibt alles zurück, was `useScorm()` zurückgibt (`api`, `status`, `raw`), und zusätzlich:
 
 | Feld | Typ | Beschreibung |
 |-------|------|-------------|
-| `initialized` | `boolean` | `true` nach erfolgreichem `initialize()`-Aufruf. Reaktiv. |
-| `terminated` | `boolean` | `true` nach erfolgreichem `terminate()`-Aufruf. Reaktiv. |
-| `initialize()` | `Result<true, ScormError> \| undefined` | Ruft `api.initialize()` auf und aktualisiert den Zustand. `undefined` wenn keine API vorhanden. |
-| `terminate()` | `Result<true, ScormError> \| undefined` | Ruft `api.terminate()` auf und aktualisiert den Zustand. `undefined` wenn keine API vorhanden. |
-| `commit()` | `Result<true, ScormError> \| undefined` | Ruft `api.commit()` auf. `undefined` wenn keine API vorhanden. |
+| `initialized` | `boolean` | `true` nach erfolgreichem `initialize()`. Reaktiv. |
+| `terminated` | `boolean` | `true` nach erfolgreichem `terminate()`. Reaktiv. |
+| `initialize()` | `Result<true, ScormError> \| undefined` | Ruft `api.initialize()` auf und aktualisiert den Zustand. `undefined`, wenn keine API vorhanden. |
+| `terminate()` | `Result<true, ScormError> \| undefined` | Ruft `api.terminate()` auf und aktualisiert den Zustand. `undefined`, wenn keine API vorhanden. |
+| `commit()` | `Result<true, ScormError> \| undefined` | Ruft `api.commit()` auf. `undefined`, wenn keine API vorhanden. |
 
-> **Hinweis:** Wenn `noLmsBehavior` `'error'` ist und kein LMS gefunden wird, ist `api` `null` und alle drei Methoden geben `undefined` zurück. Prüfe `status.apiFound`, wenn du diesen Fall unterscheiden musst.
+> **Hinweis:** Wenn `noLmsBehavior` auf `'error'` steht und kein LMS gefunden wird, ist `api` `null` und alle drei Methoden geben `undefined` zurück. Prüfe `status.apiFound`, wenn du diesen Fall unterscheiden musst.
 
 ## useScormAutoTerminate (opt-in)
 
@@ -405,7 +405,7 @@ scorm12ObjectivePath(0, 'score.raw')       // "cmi.objectives.0.score.raw"
 scorm2004InteractionPath(1, 'learner_response')  // "cmi.interactions.1.learner_response"
 ```
 
-## Zeit-Formatierer
+## Time Formatters
 
 ```ts
 import { formatScorm12Time, formatScorm2004Time } from '@studiolxd/scorm/react';
@@ -416,7 +416,7 @@ formatScorm2004Time(90000) // "PT1M30S"
 
 ## Tests
 
-Verwende `noLmsBehavior: 'mock'` für Tests. Der Mock nutzt einen In-Memory-Speicher mit echtem Treiber-Verhalten.
+Verwende `noLmsBehavior: 'mock'` für Tests. Der Mock nutzt einen In-Memory-Store mit echtem Treiber-Verhalten.
 
 ```tsx
 // In tests
@@ -451,7 +451,7 @@ const path: Scorm12CmiPath = 'cmi.core.lesson_status';  // OK
 
 ## Weitere Dokumentation
 
-- [SCORM 1.2 vs 2004 Mapping-Tabelle](./docs/scorm-mapping-table.md)
+- [SCORM 1.2 vs. 2004 — Mapping-Tabelle](./docs/scorm-mapping-table.md)
 - [Testen mit dem Mock-Modus](./docs/mock-mode.md)
 - [Integrationsleitfaden](./docs/integration-guide.md)
 

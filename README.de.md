@@ -2,16 +2,16 @@
 
 # @studiolxd/scorm
 
-Monorepo für `@studiolxd/scorm` — eine Headless-Laufzeitumgebung für SCORM 1.2 / 2004 mit einem **frameworkunabhängigen Kern** und Adaptern für **React, Vue, Angular, Svelte, Web Components** sowie reines Vanilla-JS — inklusive einer interaktiven Demo-App.
+Monorepo für `@studiolxd/scorm` — eine Headless-Runtime für SCORM 1.2 / 2004 mit einem **frameworkunabhängigen Kern** und Adaptern für **React, Vue, Angular, Svelte, Web Components** sowie reines Vanilla-JS — inklusive einer interaktiven Demo-App.
 
-> Vormals `@studiolxd/react-scorm`. Die React-API befindet sich jetzt im Unterpfad `@studiolxd/scorm/react`.
+> Früher `@studiolxd/react-scorm`. Die React-API liegt jetzt unter dem Subpath `@studiolxd/scorm/react`.
 
 ## Pakete
 
 | Paket | Beschreibung | Doku |
 |---------|-------------|------|
-| [`@studiolxd/scorm`](./packages/scorm/) | Headless-Laufzeitumgebung für SCORM 1.2 / 2004 — unabhängiger Kern + Framework-Adapter | [README](./packages/scorm/README.md) |
-| [`example`](./example/) | Interaktive Demo-App — präsentiert jede Funktion der Bibliothek | [README](./example/README.md) |
+| [`@studiolxd/scorm`](./packages/scorm/) | Headless-Runtime für SCORM 1.2 / 2004 — frameworkunabhängiger Kern + Framework-Adapter | [README](./packages/scorm/README.md) |
+| [`example`](./example/) | Interaktive Demo-App — zeigt jede Funktion der Bibliothek | [README](./example/README.md) |
 
 ## Erste Schritte
 
@@ -28,7 +28,7 @@ Weitere Skripte, die vom Stammverzeichnis aus verfügbar sind:
 
 ## Einstiegspunkte
 
-Die Bibliothek ist ein einzelnes Paket mit Unterpfad-Exporten — importiere nur das, was du verwendest:
+Die Bibliothek ist ein einzelnes Paket mit Subpath-Exports — importiere nur, was du verwendest:
 
 | Import | Für |
 |--------|-----|
@@ -57,7 +57,7 @@ react-scorm/
 
 ## Veröffentlichung
 
-Nur `packages/scorm` wird auf npm veröffentlicht. Der `example`-Workspace und das Stammverzeichnis sind privat. So wird veröffentlicht:
+Nur `packages/scorm` wird auf npm veröffentlicht. Der `example`-Workspace und das Stammverzeichnis sind privat. Zum Veröffentlichen:
 
 ```bash
 cd packages/scorm

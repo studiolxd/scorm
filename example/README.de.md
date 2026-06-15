@@ -3,11 +3,11 @@
 # `@studiolxd/scorm` — Interaktive Demo
 
 Eine interaktive, voll funktionsfähige Beispielanwendung, die jede Funktion der
-[`@studiolxd/scorm`](https://www.npmjs.com/package/@studiolxd/scorm)-Bibliothek demonstriert — einschließlich des
+Bibliothek [`@studiolxd/scorm`](https://www.npmjs.com/package/@studiolxd/scorm) demonstriert — einschließlich des
 frameworkunabhängigen Kerns (Vanilla) und der `<scorm-session>` Web Component.
 
 Erstellt mit **React 19 + TypeScript + Vite** (unter Verwendung des `@studiolxd/scorm/react`-Adapters). Läuft
-vollständig im Browser mithilfe des **Mock-Modus** der Bibliothek — kein Learning Management System (LMS) erforderlich.
+vollständig im Browser über den **Mock-Modus** der Bibliothek — kein Learning Management System (LMS) erforderlich.
 
 ---
 
@@ -24,8 +24,8 @@ npm run dev
 
 ## Was diese Demo zeigt
 
-Die App besitzt einen **SCORM-Versionsumschalter** in der Kopfzeile (1.2 / 2004). Das Umschalten der Version
-mountet den `ScormProvider` mit der neuen Version neu und setzt dabei den gesamten Zustand zurück. So lässt sich
+Die App enthält in der Kopfzeile einen **SCORM-Versionsumschalter** (1.2 / 2004). Beim Umschalten der Version
+wird der `ScormProvider` mit der neuen Version neu gemountet, wobei der gesamte Zustand zurückgesetzt wird. So lässt sich
 das Verhalten beider SCORM-Standards direkt nebeneinander vergleichen.
 
 ### 10 Demo-Bereiche
@@ -49,7 +49,7 @@ das Verhalten beider SCORM-Standards direkt nebeneinander vergleichen.
 
 Die App verwendet `noLmsBehavior: 'mock'` im `ScormProvider`. Damit wird eine In-Memory-SCORM-API
 aktiviert, die sich wie ein echtes LMS verhält — kein Server erforderlich. Alle Daten werden im Arbeitsspeicher
-gehalten und gehen beim Seitenaktualisieren verloren.
+gehalten und gehen beim Neuladen der Seite verloren.
 
 ```tsx
 // App.tsx
@@ -66,7 +66,7 @@ gehalten und gehen beim Seitenaktualisieren verloren.
 
 ## Bibliotheksübersicht
 
-`@studiolxd/scorm` ist eine Headless-TypeScript-SCORM-Laufzeitbibliothek: ein frameworkunabhängiger Kern
+`@studiolxd/scorm` ist eine Headless-TypeScript-Bibliothek für die SCORM-Runtime: ein frameworkunabhängiger Kern
 mit Adaptern für React, Vue, Angular, Svelte und Web Components. Diese Demo verwendet den React-Adapter.
 
 ### Grundkonzepte
@@ -116,7 +116,7 @@ function Lesson() {
 }
 ```
 
-Oder nutze `useScormSession()` für reaktiven initialisierten/terminierten Zustand:
+Oder nutze `useScormSession()` für reaktiven `initialized`/`terminated`-Zustand:
 
 ```tsx
 import { useScormSession } from '@studiolxd/scorm/react';
@@ -131,11 +131,11 @@ function Course() {
 }
 ```
 
-`useScormSession()` ist eine Obermenge von `useScorm()` — es gibt alles zurück, was `useScorm()` zurückgibt (`api`, `status`, `raw`), sowie reaktive boolesche Werte für `initialized`/`terminated` und die eingebetteten Methoden `initialize()`, `terminate()` und `commit()`, die diesen Zustand automatisch aktualisieren.
+`useScormSession()` ist eine Obermenge von `useScorm()` — es gibt alles zurück, was `useScorm()` zurückgibt (`api`, `status`, `raw`), und zusätzlich die reaktiven booleschen Werte `initialized`/`terminated` sowie die gekapselten Methoden `initialize()`, `terminate()` und `commit()`, die diesen Zustand automatisch aktualisieren.
 
 **3. Result-basierte Fehlerbehandlung**
 
-Jede API-Methode gibt ein `Result<T, ScormError>` zurück — keine geworfenen Ausnahmen:
+Jede API-Methode gibt ein `Result<T, ScormError>` zurück — keine geworfenen Exceptions:
 
 ```tsx
 const r = api.setScore({ raw: 85, min: 0, max: 100 });
@@ -152,7 +152,7 @@ if (r.ok) {
 **4. Versionsneutrale API**
 
 Dieselben Methodennamen funktionieren für SCORM 1.2 und 2004. Die Bibliothek bildet sie intern auf die
-richtigen CMI-Pfade ab:
+korrekten CMI-Pfade ab:
 
 ```tsx
 // Works identically for 1.2 and 2004
@@ -225,7 +225,7 @@ api.getLearnerCommentCount()                        // → Result<number, ScormE
 
 Bei SCORM 1.2 werden alle Comments in einer einzigen Zeichenkette zusammengeführt — der kombinierte Wert ist auf 4096 Zeichen begrenzt (Fehler 405 bei Überschreitung). SCORM 2004 verwendet indizierte `cmi.comments_from_learner`-Einträge ohne diese Einschränkung.
 
-#### Direktzugriff (Notausstieg)
+#### Raw Escape Hatch
 ```tsx
 api.getRaw('cmi.learner_id')          // → Result<string, ScormError>
 api.setRaw('cmi.progress_measure', '0.75')  // → Result<string, ScormError>
@@ -238,18 +238,18 @@ api.setNavRequest('continue')
 api.getNavRequestValid('continue')
 ```
 
-### SCORM 1.2 vs 2004 — Kurzübersicht
+### SCORM 1.2 vs. 2004 — Spickzettel
 
 | Funktion | SCORM 1.2 | SCORM 2004 |
 |---------|-----------|------------|
 | Abschluss + Bestehen | Einzelner `lesson_status` | Getrennte `completion_status` + `success_status` |
 | Skalierter Score | Nicht verfügbar | `cmi.score.scaled` (-1 bis 1) |
-| Maximale Suspend-Data | 4.096 Zeichen | 64.000 Zeichen |
+| Max. Suspend Data | 4.096 Zeichen | 64.000 Zeichen |
 | Sitzungszeit-Format | `HH:MM:SS.SS` | `PT#H#M#S` (ISO 8601) |
 | Fortschrittsmessung | Nicht verfügbar | `cmi.progress_measure` (0–1) |
 | Navigation | Nicht verfügbar | ADL-Nav-Requests |
 | Comments | Einzelne Zeichenkette | Indiziertes Array mit Location + Zeitstempel |
-| Lernenden-ID-Pfad | `cmi.core.student_id` | `cmi.learner_id` |
+| Pfad der Lernenden-ID | `cmi.core.student_id` | `cmi.learner_id` |
 
 ---
 
@@ -275,7 +275,7 @@ src/
 
 ### Design-System (App.css)
 
-Die App verwendet CSS-Custom-Properties für ein einheitliches dunkles Theme:
+Die App verwendet CSS Custom Properties für ein einheitliches Dark Theme:
 
 ```css
 --bg            /* #0a0c10 — page background */
@@ -298,15 +298,15 @@ Wiederverwendbare CSS-Klassen: `.section`, `.feature-block`, `.controls`, `.fiel
 
 ### Build — Vite 7
 
-[Vite](https://vite.dev) betreibt sowohl den Entwicklungsserver als auch den Produktions-Build.
+[Vite](https://vite.dev) treibt sowohl den Dev-Server als auch den Production-Build an.
 
-- Sofortiges HMR via `@vitejs/plugin-react` (React Fast Refresh)
+- Sofortiges HMR über `@vitejs/plugin-react` (React Fast Refresh)
 - TypeScript-Transpilierung durch Vite (esbuild) — kein `tsc`-Emit
-- Produktions-Build: `tsc -b` für die Typprüfung + `vite build` für das Bündeln
+- Production-Build: `tsc -b` für die Typprüfung + `vite build` für das Bundling
 
 ### Language — TypeScript 5.9 (strict)
 
-Vollständiger Strict-Modus aktiviert in `tsconfig.app.json`:
+Voller Strict-Modus aktiviert in `tsconfig.app.json`:
 
 | Option | Wert | Effekt |
 |--------|-------|--------|
@@ -314,14 +314,14 @@ Vollständiger Strict-Modus aktiviert in `tsconfig.app.json`:
 | `noUnusedLocals` | `true` | Fehler bei ungenutzten Variablen |
 | `noUnusedParameters` | `true` | Fehler bei ungenutzten Funktionsparametern |
 | `noFallthroughCasesInSwitch` | `true` | Erzwingt vollständige Switch-Anweisungen |
-| `verbatimModuleSyntax` | `true` | Behält Import-/Export-Syntax exakt bei |
+| `verbatimModuleSyntax` | `true` | Behält die Import-/Export-Syntax exakt bei |
 | `noEmit` | `true` | Nur Typprüfung — Vite übernimmt die Kompilierung |
 
 Zwei tsconfig-Ziele: `tsconfig.app.json` (src/, ES2022 + DOM) und `tsconfig.node.json` (vite.config.ts, ES2023 + Node-Typen).
 
 ### Linting — ESLint 9 (flat config)
 
-`eslint.config.js` verwendet das Flat-Config-Format mit vier Regelsets:
+`eslint.config.js` verwendet das Flat-Config-Format mit vier Regelsätzen:
 
 | Plugin | Version | Bereitgestellte Regeln |
 |--------|---------|----------------|
@@ -336,10 +336,10 @@ Ausführen mit `npm run lint`.
 
 | Skript | Befehl | Beschreibung |
 |--------|---------|-------------|
-| `npm run dev` | `vite` | Startet den Entwicklungsserver unter `http://localhost:5173` |
-| `npm run build` | `tsc -b && vite build` | Typprüfung + Produktionsbundle |
+| `npm run dev` | `vite` | Startet den Dev-Server unter `http://localhost:5173` |
+| `npm run build` | `tsc -b && vite build` | Typprüfung + Production-Bundle |
 | `npm run lint` | `eslint .` | Lintet alle `.ts`- / `.tsx`-Dateien |
-| `npm run preview` | `vite preview` | Vorschau des Produktions-Builds lokal |
+| `npm run preview` | `vite preview` | Vorschau des Production-Builds lokal |
 
 ### CI — GitHub Actions
 
@@ -359,26 +359,26 @@ Zwei KI-Entwicklungs-Skills sind für die Verwendung mit [Claude Code](https://c
 
 > Quelle: `anthropics/skills`
 
-Leitet die Erstellung unverwechselbarer, produktionsreifer Frontend-Oberflächen an. Wird beim Erstellen von Komponenten, Seiten oder jeder Web-UI ausgelöst. Setzt eine markante ästhetische Richtung, bewusste Designentscheidungen und eine ausgefeilte Umsetzung durch — und vermeidet dabei ausdrücklich generische KI-erzeugte Ästhetik.
+Unterstützt die Erstellung unverwechselbarer, produktionsreifer Frontend-Oberflächen. Wird beim Erstellen von Komponenten, Seiten oder beliebiger Web-UI ausgelöst. Erzwingt eine markante ästhetische Richtung, bewusste Designentscheidungen und eine ausgefeilte Umsetzung — und vermeidet dabei ausdrücklich generische KI-Ästhetik.
 
 ### `vercel-react-best-practices` — Vercel
 
 > Quelle: `vercel-labs/agent-skills`
 
-React-Leistungsoptimierungsrichtlinien, gepflegt von Vercel Engineering. Enthält **57 Regeln in 8 Kategorien**, die beim Schreiben oder Überprüfen von React-Komponenten, Datenabruf, Bundle-Konfiguration oder leistungssensiblem Code angewendet werden:
+Richtlinien zur React-Performance-Optimierung, gepflegt von Vercel Engineering. Enthält **57 Regeln in 8 Kategorien**, die beim Schreiben oder Reviewen von React-Komponenten, Datenabruf, Bundle-Konfiguration oder beliebigem performancekritischem Code angewendet werden:
 
 | Kategorie | Regeln | Schwerpunkt |
 |----------|:-----:|-------|
 | `rerender` | 13 | Unnötige Re-Renders vermeiden (memo, abgeleiteter Zustand, Refs) |
-| `js` | 12 | JavaScript-Leistung (Caching, frühe Rückgaben, effiziente Datenstrukturen) |
-| `rendering` | 10 | Render-Optimierung (bedingtes Rendern, Hydratisierung, Übergänge) |
-| `server` | 7 | Serverseitige Muster (paralleles Abrufen, Caching, Auth-Aktionen) |
-| `async` | 5 | Asynchrone Muster (Suspense-Grenzen, verzögertes await, parallele Abhängigkeiten) |
-| `bundle` | 5 | Bundle-Optimierung (dynamische Importe, Barrel-Dateien, Vorladen) |
+| `js` | 12 | JavaScript-Performance (Caching, frühe Rückgaben, effiziente Datenstrukturen) |
+| `rendering` | 10 | Render-Optimierung (bedingtes Rendern, Hydration, Transitions) |
+| `server` | 7 | Serverseitige Muster (paralleler Datenabruf, Caching, Auth-Actions) |
+| `async` | 5 | Asynchrone Muster (Suspense-Boundaries, verzögertes await, parallele Abhängigkeiten) |
+| `bundle` | 5 | Bundle-Optimierung (dynamische Imports, Barrel-Dateien, Preloading) |
 | `client` | 4 | Clientseitige Muster (Event-Listener, localStorage-Schema, SWR-Deduplizierung) |
 | `advanced` | 3 | Fortgeschrittene Muster (Event-Handler-Refs, Init-once, useLatest) |
 
-Skills werden unter `.agents/skills/` installiert und in `skills-lock.json` fixiert.
+Die Skills werden unter `.agents/skills/` installiert und in `skills-lock.json` gepinnt.
 
 ---
 
