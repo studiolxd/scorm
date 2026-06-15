@@ -19,7 +19,7 @@
 > - [x] 8 `llms.txt` + `AGENTS.md` + README (imports en 6 idiomas)
 > - [x] 9 `skills/` (fuente única → Claude/Cursor/portable)
 > - [x] 10 Pestaña Vanilla/WC en el ejemplo
-> - [ ] **Pendiente:** smoke test de Angular 17+ en CI (compilación AOT real)
+> - [x] 11b Smoke test de Angular 17 en CI (`tests/angular-smoke/` + workflow) — **verde localmente** (AOT producción)
 > - [ ] **Pendiente:** traducción completa de los READMEs no-inglés (imports ya corregidos)
 > - [ ] **N/A:** shim + deprecate de `@studiolxd/react-scorm` (sólo al publicar; el 1.1.0 no se publica)
 
