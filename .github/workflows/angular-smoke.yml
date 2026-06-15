@@ -30,10 +30,13 @@ jobs:
           cache: npm
 
       - name: Install monorepo deps
-        # npm install (not npm ci) to sidestep npm's cross-platform optional-dependency
-        # bug (npm/cli#4828): a lockfile generated on macOS makes `npm ci` skip the
-        # Linux rollup native binary that tsup/rollup need on the runner.
-        run: npm install --no-audit --no-fund
+        # Remove the lockfile before installing to sidestep npm's cross-platform
+        # optional-dependency bug (npm/cli#4828): a lockfile generated on macOS makes
+        # npm skip the Linux rollup native binary tsup/rollup need on the runner.
+        # A fresh install resolves the correct platform binaries.
+        run: |
+          rm -f package-lock.json
+          npm install --no-audit --no-fund
 
       - name: Build @studiolxd/scorm
         run: npm run build --workspace=packages/scorm
