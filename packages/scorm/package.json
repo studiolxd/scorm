@@ -98,6 +98,15 @@
     "headless"
   ],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/studiolxd/scorm.git",
+    "directory": "packages/scorm"
+  },
+  "homepage": "https://github.com/studiolxd/scorm#readme",
+  "bugs": {
+    "url": "https://github.com/studiolxd/scorm/issues"
+  },
   "publishConfig": {
     "access": "public"
   }
