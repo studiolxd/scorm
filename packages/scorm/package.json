@@ -1,6 +1,6 @@
 {
   "name": "@studiolxd/scorm",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Headless SCORM 1.2/2004 runtime — framework-agnostic core with React, Vue, Angular, Svelte and Web Component adapters",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -10,28 +10,64 @@
   "jsdelivr": "./dist/scorm.global.js",
   "exports": {
     ".": {
-      "import": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
-      "require": { "types": "./dist/index.d.cts", "default": "./dist/index.cjs" }
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
     },
     "./react": {
-      "import": { "types": "./dist/react.d.ts", "default": "./dist/react.js" },
-      "require": { "types": "./dist/react.d.cts", "default": "./dist/react.cjs" }
+      "import": {
+        "types": "./dist/react.d.ts",
+        "default": "./dist/react.js"
+      },
+      "require": {
+        "types": "./dist/react.d.cts",
+        "default": "./dist/react.cjs"
+      }
     },
     "./wc": {
-      "import": { "types": "./dist/wc.d.ts", "default": "./dist/wc.js" },
-      "require": { "types": "./dist/wc.d.cts", "default": "./dist/wc.cjs" }
+      "import": {
+        "types": "./dist/wc.d.ts",
+        "default": "./dist/wc.js"
+      },
+      "require": {
+        "types": "./dist/wc.d.cts",
+        "default": "./dist/wc.cjs"
+      }
     },
     "./vue": {
-      "import": { "types": "./dist/vue.d.ts", "default": "./dist/vue.js" },
-      "require": { "types": "./dist/vue.d.cts", "default": "./dist/vue.cjs" }
+      "import": {
+        "types": "./dist/vue.d.ts",
+        "default": "./dist/vue.js"
+      },
+      "require": {
+        "types": "./dist/vue.d.cts",
+        "default": "./dist/vue.cjs"
+      }
     },
     "./angular": {
-      "import": { "types": "./dist/angular.d.ts", "default": "./dist/angular.js" },
-      "require": { "types": "./dist/angular.d.cts", "default": "./dist/angular.cjs" }
+      "import": {
+        "types": "./dist/angular.d.ts",
+        "default": "./dist/angular.js"
+      },
+      "require": {
+        "types": "./dist/angular.d.cts",
+        "default": "./dist/angular.cjs"
+      }
     },
     "./svelte": {
-      "import": { "types": "./dist/svelte.d.ts", "default": "./dist/svelte.js" },
-      "require": { "types": "./dist/svelte.d.cts", "default": "./dist/svelte.cjs" }
+      "import": {
+        "types": "./dist/svelte.d.ts",
+        "default": "./dist/svelte.js"
+      },
+      "require": {
+        "types": "./dist/svelte.d.cts",
+        "default": "./dist/svelte.cjs"
+      }
     },
     "./package.json": "./package.json"
   },
@@ -60,11 +96,21 @@
     "svelte": ">=4.0.0"
   },
   "peerDependenciesMeta": {
-    "react": { "optional": true },
-    "react-dom": { "optional": true },
-    "vue": { "optional": true },
-    "@angular/core": { "optional": true },
-    "svelte": { "optional": true }
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    },
+    "vue": {
+      "optional": true
+    },
+    "@angular/core": {
+      "optional": true
+    },
+    "svelte": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@angular/core": "^17.3.0",
