@@ -301,7 +301,7 @@ scorm-skills/                      (repo/distribución APARTE)
 
 ### 9.3 ¿Mismo paquete npm o separado? → **Separado**
 El paquete de runtime queda ligero (solo `dist` + `llms.txt`). Las skills viven en un **repo
-dedicado `studiolxd/scorm-skills`** (audiencia y distribución distintas: *marketplaces*, no
+dedicado `studiolxd/scorm-skills`** (hoy consolidado en `studiolxd/skills`) (audiencia y distribución distintas: *marketplaces*, no
 `npm install`). Versionado en paralelo, no empaquetado en el tarball.
 
 ### 9.4 Publicación

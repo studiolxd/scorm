@@ -2,6 +2,15 @@
 
 All notable changes to `@studiolxd/scorm` are documented here.
 
+## [2.0.1] - 2026-07-23
+
+### Documentation
+- The agent skill moved to the consolidated marketplace **`studiolxd/skills`**
+  (formerly `studiolxd/scorm-skills`; the old URL redirects). Install is now
+  `/plugin marketplace add studiolxd/skills` + `/plugin install scorm-skills@studiolxd`.
+  Updated README and `llms.txt`, and documented Codex/ChatGPT usage (append
+  `scorm-skills/agents/scorm.md` to your project's `AGENTS.md`).
+
 ## [2.0.0] - 2026-06-15
 
 ### Changed (BREAKING)

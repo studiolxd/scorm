@@ -451,14 +451,15 @@ const path: Scorm12CmiPath = 'cmi.core.lesson_status';  // OK
 
 ## AI coding agents
 
-Using Claude Code, Cursor, or another AI coding assistant? Add the **[scorm-skills](https://github.com/studiolxd/scorm-skills)** so the agent knows how to use this library:
+Using Claude Code, Cursor, or another AI coding assistant? Add the **[scorm-skills](https://github.com/studiolxd/skills)** so the agent knows how to use this library:
 
 ```
 # Claude Code
-/plugin marketplace add studiolxd/scorm-skills
-/plugin install scorm-skills@studiolxd-scorm
+/plugin marketplace add studiolxd/skills
+/plugin install scorm-skills@studiolxd
 
-# Cursor: copy cursor/scorm.mdc into your project's .cursor/rules/
+# Cursor: copy scorm-skills/cursor/scorm.mdc into your project's .cursor/rules/
+# Codex/ChatGPT: append scorm-skills/agents/scorm.md to your project's AGENTS.md
 ```
 
 ## Additional Documentation
