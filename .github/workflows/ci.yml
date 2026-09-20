@@ -31,7 +31,16 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: npm
 
-      - run: npm ci
+      # TEMPORARY, mirrors the same workaround in angular-smoke.yml.
+      # package-lock.json was generated on macOS and is missing the installable
+      # entry for @rolldown/binding-linux-x64-gnu (npm/cli#4828), so `npm ci` on
+      # a Linux runner leaves vitest without its native binding and every test
+      # file fails to load. A fresh install resolves the right platform binaries.
+      # The pnpm migration removes this: pnpm records every platform variant in
+      # the lockfile and filters them at install time.
+      - run: |
+          rm -f package-lock.json
+          npm install --no-audit --no-fund
 
       - name: Typecheck (library)
         run: npm run typecheck --workspace=packages/scorm
