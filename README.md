@@ -16,15 +16,15 @@ Monorepo for `@studiolxd/scorm` — a headless SCORM 1.2 / 2004 runtime with a *
 ## Getting Started
 
 ```bash
-npm install          # install all workspaces from the root
-npm run dev:lib      # build the library in watch mode
-npm run dev:example  # start the example dev server (http://localhost:5173)
+pnpm install         # install all workspaces from the root
+pnpm run dev:lib     # build the library in watch mode
+pnpm run dev:example # start the example dev server (http://localhost:5173)
 ```
 
 Additional scripts available from the root:
 
-- `npm run build` — builds the library
-- `npm run test` — runs the library test suite
+- `pnpm run build` — builds the library
+- `pnpm run test` — runs the library test suite
 
 ## Entry points
 
@@ -44,7 +44,7 @@ The library is a single package with subpath exports — import only what you us
 
 ```
 react-scorm/
-├── package.json          # npm workspaces root (private)
+├── package.json          # pnpm workspaces root (private)
 ├── packages/
 │   └── scorm/            # @studiolxd/scorm — published to npm
 │       └── README.md     # full library documentation
