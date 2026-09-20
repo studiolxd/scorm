@@ -38,6 +38,10 @@ jobs:
       # file fails to load. A fresh install resolves the right platform binaries.
       # The pnpm migration removes this: pnpm records every platform variant in
       # the lockfile and filters them at install time.
+      # The npm bundled with Node 22 also crashes here with
+      # "Cannot read properties of null (reading 'edgesOut')" (an arborist bug
+      # on workspace installs), so pin a newer npm first.
+      - run: npm install -g npm@latest
       - run: |
           rm -f package-lock.json
           npm install --no-audit --no-fund
