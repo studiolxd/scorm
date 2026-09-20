@@ -41,7 +41,8 @@ jobs:
       # The npm bundled with Node 22 also crashes here with
       # "Cannot read properties of null (reading 'edgesOut')" (an arborist bug
       # on workspace installs), so pin a newer npm first.
-      - run: npm install -g npm@latest
+      # Pinned to 11: npm@latest is 12.x, which requires Node >= 22.
+      - run: npm install -g npm@11
       - run: |
           rm -f package-lock.json
           npm install --no-audit --no-fund
