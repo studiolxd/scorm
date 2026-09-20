@@ -5,7 +5,7 @@ monorepo. For how to *use* the published library, see `packages/scorm/llms.txt`.
 
 ## What this is
 
-`@studiolxd/scorm` — a headless SCORM 1.2 / 2004 runtime. npm workspaces monorepo:
+`@studiolxd/scorm` — a headless SCORM 1.2 / 2004 runtime. pnpm workspaces monorepo:
 
 - `packages/scorm/` — the published library (`@studiolxd/scorm`).
   - `src/` core is **framework-agnostic** (no framework imports outside `src/react`,
@@ -17,12 +17,17 @@ monorepo. For how to *use* the published library, see `packages/scorm/llms.txt`.
 
 ## Commands (run from repo root)
 
-- `npm run build` — build the library.
-- `npm run test` — run the library test suite (vitest).
-- `npm run dev:example` — run the demo at http://localhost:5173.
-- Per-package: `npm run typecheck --workspace=packages/scorm`.
+- `pnpm run build` — build the library.
+- `pnpm run test` — run the library test suite (vitest).
+- `pnpm run dev:example` — run the demo at http://localhost:5173.
+- Per-package: `pnpm --filter @studiolxd/scorm run typecheck`.
 
 Always run `typecheck` + `test:run` + `build` in `packages/scorm` before committing.
+
+Dependencies are managed with **pnpm**; publishing still goes out with `npm publish`
+from `packages/scorm`. `tests/angular-smoke/` is deliberately outside the workspace
+and installed with npm — it stands in for a real downstream consumer. Never run
+`npm install` at the repo root.
 
 ## Conventions
 
