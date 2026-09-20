@@ -1,17 +1,17 @@
 {
   "name": "@studiolxd/scorm-monorepo",
   "private": true,
-  "workspaces": [
-    "packages/*",
-    "example"
-  ],
+  "packageManager": "pnpm@11.18.0",
   "devDependencies": {
     "jsdom": "^25.0.0"
   },
   "scripts": {
-    "build": "npm run build --workspace=packages/scorm",
-    "test": "npm run test:run --workspace=packages/scorm",
-    "dev:lib": "npm run dev --workspace=packages/scorm",
-    "dev:example": "npm run dev --workspace=example"
+    "build": "pnpm --filter @studiolxd/scorm run build",
+    "test": "pnpm --filter @studiolxd/scorm run test:run",
+    "typecheck": "pnpm --filter @studiolxd/scorm run typecheck",
+    "dev:lib": "pnpm --filter @studiolxd/scorm run dev",
+    "dev:example": "pnpm --filter scorm-example run dev",
+    "lint:example": "pnpm --filter scorm-example run lint",
+    "build:example": "pnpm --filter scorm-example run build"
   }
 }
